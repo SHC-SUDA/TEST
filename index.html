@@ -222,8 +222,9 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);min-height:1
 
 /* ===== TABLE ===== */
 .tbl-wrap{overflow-x:auto;border-radius:10px;border:1px solid var(--border);box-shadow:0 1px 4px rgba(0,0,0,.04)}
+.tbl-wrap.sticky-header{overflow-y:auto;max-height:calc(100vh - 160px)}
 table{width:100%;border-collapse:collapse;font-size:12px;background:var(--surface)}
-th{background:var(--navy);color:#EEEDFE;font-weight:700;padding:10px 12px;text-align:left;white-space:nowrap;border-right:1px solid rgba(255,255,255,.1);font-size:11px}
+th{background:var(--navy);color:#EEEDFE;font-weight:700;padding:10px 12px;text-align:left;white-space:nowrap;border-right:1px solid rgba(255,255,255,.1);font-size:11px;position:sticky;top:0;z-index:10}
 th:last-child{border-right:none}
 td{padding:9px 12px;border-bottom:1px solid var(--border);border-right:1px solid var(--bg2);vertical-align:top;color:var(--text2);line-height:1.65}
 td:last-child{border-right:none}
@@ -316,8 +317,8 @@ tr:hover td{background:var(--bg)}
 .eg-rule-card{background:var(--surface);border:1px solid var(--border);border-left:4px solid var(--purple);border-radius:0 10px 10px 0;padding:14px 16px}
 .eg-rule-title{font-size:12px;font-weight:700;color:var(--text);margin-bottom:10px}
 .eg-rule-body{display:flex;flex-direction:column;gap:7px}
-.eg-rule-item{display:flex;align-items:flex-start;gap:8px;font-size:11px;color:var(--text2);line-height:1.65}
-.eg-rule-label{flex-shrink:0;font-size:9px;font-weight:700;padding:2px 6px;border-radius:3px;background:var(--bg2);color:var(--text2);font-family:var(--mono);margin-top:1px;white-space:nowrap}
+.eg-rule-item{display:grid;grid-template-columns:72px 1fr;align-items:flex-start;gap:8px;font-size:11px;color:var(--text2);line-height:1.65}
+.eg-rule-label{flex-shrink:0;font-size:9px;font-weight:700;padding:2px 6px;border-radius:3px;background:var(--bg2);color:var(--text2);font-family:var(--mono);margin-top:1px;white-space:nowrap;text-align:center;display:block}
 .eg-label-ok{background:#E1F5EE;color:#085041}
 .eg-label-warn{background:var(--amber-l);color:#633806}
 .eg-label-ng{background:var(--rust-l);color:#712B13}
@@ -356,6 +357,7 @@ tr:hover td{background:var(--bg)}
 
 @media(max-width:700px){
   .eg-risk-grid{grid-template-columns:1fr}
+  .eg-rule-item{grid-template-columns:60px 1fr}
 }
 
 /* ===== YAKUSHOKU REDESIGN ===== */
@@ -909,7 +911,7 @@ tr:hover td{background:var(--bg)}
         <div class="legend-item"><span class="mx-cell mx-no" style="padding:3px 10px;border-radius:4px;border:1px solid var(--border)">―</span>権限なし</div>
       </div>
       <div class="anchor-nav" id="matrix-anchor-nav"></div>
-      <div class="tbl-wrap">
+      <div class="tbl-wrap sticky-header">
         <table>
           <thead><tr><th>カテゴリ</th><th>業務項目</th><th><span class="lv lv1">社長</span></th><th><span class="lv lv2">部長</span></th><th><span class="lv lv3">次長</span></th><th><span class="lv lv4">課長</span></th><th><span class="lv lv5">係長</span></th><th><span class="lv lv6">主任</span></th><th><span class="lv lv7">一般</span></th></tr></thead>
           <tbody id="matrix-body"></tbody>
@@ -1290,33 +1292,33 @@ tr:hover td{background:var(--bg)}
         <div class="eg-rule-card" style="border-left-color:var(--blue)">
           <div class="eg-rule-title">📬 一方的な通知書による条件変更</div>
           <div class="eg-rule-body">
-            <div class="eg-rule-item"><span class="eg-rule-label">受取ルール</span>受け取った担当者・管理者は<strong>受領当日中にLARK BASEへ登録</strong>し、関連管理者・業務管理部へ自動通知</div>
-            <div class="eg-rule-item"><span class="eg-rule-label eg-label-warn">マイナス案件</span>SHCにマイナスとなる条件変更の場合は<strong>即時管理者へ報告</strong>し、交渉要否を判断すること</div>
-            <div class="eg-rule-item"><span class="eg-rule-label">異議申し立て</span>条件変更に異議がある場合は受領後速やかに管理者判断のうえ書面で異議を通知すること<br><small>（期間内に何もしないと受諾とみなされるリスクあり）</small></div>
+            <div class="eg-rule-item"><span class="eg-rule-label">受取ルール</span><span>受け取った担当者・管理者は<strong>受領当日中にLARK BASEへ登録</strong>し、関連管理者・業務管理部へ自動通知</span></div>
+            <div class="eg-rule-item"><span class="eg-rule-label eg-label-warn">マイナス案件</span><span>SHCにマイナスとなる条件変更の場合は<strong>即時管理者へ報告</strong>し、交渉要否を判断すること</span></div>
+            <div class="eg-rule-item"><span class="eg-rule-label">異議申立て</span><span>条件変更に異議がある場合は受領後速やかに管理者判断のうえ書面で異議を通知すること<br><small>（期間内に何もしないと受諾とみなされるリスクあり）</small></span></div>
           </div>
         </div>
         <div class="eg-rule-card" style="border-left-color:var(--green)">
           <div class="eg-rule-title">🤝 商談・交渉を経た合意</div>
           <div class="eg-rule-body">
-            <div class="eg-rule-item"><span class="eg-rule-label">合意確定時</span>合意書・覚書は必ず受領・保管し、<strong>受領当日中にLARK BASEへ登録</strong></div>
-            <div class="eg-rule-item"><span class="eg-rule-label">共有義務</span>自動通知で関連管理者・業務管理部へ即時共有。業務管理部は通知受領後<strong>速やかに請求・精算条件を更新</strong>すること</div>
-            <div class="eg-rule-item"><span class="eg-rule-label eg-label-ng">口頭禁止</span>口頭のみでの条件変更合意は原則禁止。必ずメール・文書等で確認・記録すること</div>
+            <div class="eg-rule-item"><span class="eg-rule-label">合意確定時</span><span>合意書・覚書は必ず受領・保管し、<strong>受領当日中にLARK BASEへ登録</strong></span></div>
+            <div class="eg-rule-item"><span class="eg-rule-label">共有義務</span><span>自動通知で関連管理者・業務管理部へ即時共有。業務管理部は通知受領後<strong>速やかに請求・精算条件を更新</strong>すること</span></div>
+            <div class="eg-rule-item"><span class="eg-rule-label eg-label-ng">口頭禁止</span><span>口頭のみでの条件変更合意は原則禁止。必ずメール・文書等で確認・記録すること</span></div>
             <div class="eg-rule-note">口頭で話が進んだ場合は管理者が相手方へ確認メールを送り証跡を作ること</div>
           </div>
         </div>
         <div class="eg-rule-card" style="border-left-color:var(--purple)">
           <div class="eg-rule-title">🔄 条件変更時の再承認ルール</div>
           <div class="eg-rule-body">
-            <div class="eg-rule-item"><span class="eg-rule-label eg-label-warn">原則</span>一度合意した仕入れ・手数料条件を変更する場合も<strong>同じ決裁権限者の承認が必要</strong></div>
-            <div class="eg-rule-item"><span class="eg-rule-label eg-label-ng">禁止</span>なし崩し的な条件変更・担当者レベルでの独断合意は不可</div>
-            <div class="eg-rule-item"><span class="eg-rule-label">記録</span>変更内容・変更理由・適用開始日をLARK BASEに記録すること</div>
+            <div class="eg-rule-item"><span class="eg-rule-label eg-label-warn">原則</span><span>一度合意した仕入れ・手数料条件を変更する場合も<strong>同じ決裁権限者の承認が必要</strong></span></div>
+            <div class="eg-rule-item"><span class="eg-rule-label eg-label-ng">禁止</span><span>なし崩し的な条件変更・担当者レベルでの独断合意は不可</span></div>
+            <div class="eg-rule-item"><span class="eg-rule-label">記録</span><span>変更内容・変更理由・適用開始日をLARK BASEに記録すること</span></div>
           </div>
         </div>
         <div class="eg-rule-card" style="border-left-color:var(--amber)">
           <div class="eg-rule-title">📊 価格の整合性・競合比較（推奨）</div>
           <div class="eg-rule-body">
-            <div class="eg-rule-item"><span class="eg-rule-label eg-label-ok">推奨</span>市場相場・競合他社条件との比較を記録することを推奨する</div>
-            <div class="eg-rule-item"><span class="eg-rule-label">目的</span>「なぜその価格で合意したか」を後から説明できる状態を保つことでトラブル時の根拠にもなる</div>
+            <div class="eg-rule-item"><span class="eg-rule-label eg-label-ok">推奨</span><span>市場相場・競合他社条件との比較を記録することを推奨する</span></div>
+            <div class="eg-rule-item"><span class="eg-rule-label">目的</span><span>「なぜその価格で合意したか」を後から説明できる状態を保つことでトラブル時の根拠にもなる</span></div>
             <div class="eg-rule-note">必須義務ではないが、決裁管理者は価格交渉・決裁の経緯を自ら管理・保持しておくこと</div>
           </div>
         </div>
