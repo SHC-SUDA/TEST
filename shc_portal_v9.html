@@ -1,0 +1,2306 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SHC 社内ポータル</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&family=DM+Mono:wght@400;500&family=Syne:wght@700;800&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --navy:#0F1030;--navy2:#181A45;--navy3:#21235A;
+  --purple:#5B52C8;--purple-l:#EEEDFE;--purple-m:#7B74D6;
+  --green:#0F6E56;--green-l:#E1F5EE;
+  --blue:#185FA5;--blue-l:#E6F1FB;
+  --olive:#3B6D11;--olive-l:#EAF3DE;
+  --amber:#854F0B;--amber-l:#FAEEDA;
+  --rust:#993C1D;--rust-l:#FAECE7;
+  --bg:#F4F3EF;--bg2:#ECEAE4;--surface:#FFFFFF;
+  --border:#DDD9CE;--border2:#C9C5B8;
+  --text:#1A1A18;--text2:#4A4A46;--text3:#888680;
+  --sidebar:240px;
+  --font:'Noto Sans JP',sans-serif;--mono:'DM Mono',monospace;--display:'Syne',sans-serif;
+  --header-h:56px;
+  --transition:0.18s cubic-bezier(.4,0,.2,1);
+}
+html{scroll-behavior:smooth}
+body{font-family:var(--font);background:var(--bg);color:var(--text);min-height:100vh;display:flex;flex-direction:column}
+
+/* ===== HEADER ===== */
+.site-header{
+  background:var(--navy);height:var(--header-h);
+  display:flex;align-items:center;gap:16px;padding:0 20px;
+  position:fixed;top:0;left:0;right:0;z-index:200;
+  border-bottom:1px solid rgba(255,255,255,.08);
+}
+.logo{display:flex;align-items:center;gap:10px;flex-shrink:0;text-decoration:none}
+.logo-mark{width:32px;height:32px;border-radius:8px;background:var(--purple);display:flex;align-items:center;justify-content:center;font-family:var(--display);font-size:16px;font-weight:800;color:#fff;letter-spacing:-.02em}
+.logo-text{font-family:var(--display);font-size:14px;font-weight:700;color:#fff;letter-spacing:.06em}
+.logo-sub{font-size:9px;color:#7B74D6;margin-top:1px;letter-spacing:.04em}
+
+/* search */
+.search-wrap{flex:1;max-width:480px;position:relative}
+.search-input{
+  width:100%;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);
+  border-radius:8px;padding:8px 14px 8px 38px;color:#fff;font-size:12px;font-family:var(--font);
+  outline:none;transition:border-color var(--transition),background var(--transition);
+}
+.search-input::placeholder{color:rgba(255,255,255,.35)}
+.search-input:focus{background:rgba(255,255,255,.11);border-color:var(--purple-m)}
+.search-icon{position:absolute;left:12px;top:50%;transform:translateY(-50%);color:rgba(255,255,255,.4);font-size:14px;pointer-events:none}
+.search-results{
+  position:absolute;top:calc(100% + 6px);left:0;right:0;
+  background:var(--navy2);border:1px solid rgba(255,255,255,.12);border-radius:10px;
+  overflow:hidden;display:none;z-index:300;box-shadow:0 16px 40px rgba(0,0,0,.5);
+  max-height:360px;overflow-y:auto;
+}
+.search-results.visible{display:block}
+.sr-group{padding:8px 0 4px}
+.sr-group-label{font-size:10px;font-weight:700;color:#5B52C8;padding:0 14px 4px;letter-spacing:.06em;text-transform:uppercase}
+.sr-item{display:flex;align-items:center;gap:10px;padding:8px 14px;cursor:pointer;transition:background var(--transition)}
+.sr-item:hover{background:rgba(255,255,255,.07)}
+.sr-item-tag{font-size:9px;font-weight:700;padding:2px 6px;border-radius:3px;flex-shrink:0;font-family:var(--mono)}
+.sr-item-text{font-size:12px;color:#E0DEFC;line-height:1.4}
+.sr-item-sub{font-size:10px;color:#7B74D6;margin-top:1px}
+.sr-empty{padding:20px 14px;font-size:12px;color:rgba(255,255,255,.3);text-align:center}
+
+.header-right{margin-left:auto;display:flex;align-items:center;gap:12px;flex-shrink:0}
+.draft-badge{font-size:10px;color:#7B74D6;background:rgba(91,82,200,.15);border:1px solid rgba(91,82,200,.3);border-radius:4px;padding:3px 8px;white-space:nowrap}
+
+/* ===== LAYOUT ===== */
+.layout{display:flex;margin-top:var(--header-h);min-height:calc(100vh - var(--header-h))}
+
+/* ===== SIDEBAR ===== */
+.sidebar{
+  width:var(--sidebar);flex-shrink:0;
+  background:var(--navy2);
+  border-right:1px solid rgba(255,255,255,.07);
+  position:fixed;left:0;top:var(--header-h);bottom:0;
+  overflow-y:auto;display:flex;flex-direction:column;
+  z-index:100;
+}
+.sidebar::-webkit-scrollbar{width:4px}
+.sidebar::-webkit-scrollbar-thumb{background:rgba(255,255,255,.1);border-radius:2px}
+
+.nav-section{padding:16px 0 8px}
+.nav-section-label{font-size:9px;font-weight:700;color:#5B52C8;letter-spacing:.1em;text-transform:uppercase;padding:0 16px 8px}
+.nav-item{
+  display:flex;align-items:center;gap:10px;
+  padding:9px 16px;cursor:pointer;
+  transition:background var(--transition),color var(--transition);
+  border-left:2px solid transparent;
+  font-size:12px;font-weight:500;color:#9B98C8;
+  text-decoration:none;white-space:nowrap;
+}
+.nav-item:hover{background:rgba(255,255,255,.05);color:#EEEDFE}
+.nav-item.active{background:rgba(91,82,200,.18);color:#EEEDFE;border-left-color:var(--purple-m)}
+.nav-icon{font-size:14px;width:18px;text-align:center;flex-shrink:0}
+.nav-sub{padding-left:44px;font-size:11px;color:#7B74D6;padding-top:2px;padding-bottom:2px;cursor:pointer;display:block;transition:color var(--transition)}
+.nav-sub:hover{color:#CECBF6}
+.nav-sub.active{color:#EEEDFE}
+.nav-divider{height:1px;background:rgba(255,255,255,.06);margin:4px 0}
+
+.nav-bottom{margin-top:auto;padding:12px 0;border-top:1px solid rgba(255,255,255,.06)}
+.nav-update{padding:8px 16px;font-size:10px;color:#5B52C8;line-height:1.6}
+.nav-update strong{display:block;color:#7B74D6;margin-bottom:2px}
+
+/* ===== MAIN ===== */
+.main{margin-left:var(--sidebar);flex:1;min-width:0}
+
+/* ===== TAB CONTENT ===== */
+.tab-content{display:none;padding:28px 32px 60px;max-width:1060px}
+.tab-content.active{display:block}
+
+/* breadcrumb */
+.breadcrumb{display:flex;align-items:center;gap:6px;font-size:11px;color:var(--text3);margin-bottom:20px}
+.breadcrumb-sep{color:var(--border2)}
+.breadcrumb-cur{color:var(--text2);font-weight:500}
+
+.page-title{font-family:var(--display);font-size:22px;font-weight:700;color:var(--text);margin-bottom:4px;letter-spacing:-.01em}
+.page-desc{font-size:12px;color:var(--text3);margin-bottom:24px;line-height:1.7}
+
+/* ===== HOME TAB ===== */
+.home-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:28px}
+.home-card{
+  background:var(--surface);border:1px solid var(--border);border-radius:12px;
+  padding:16px 18px;cursor:pointer;transition:border-color var(--transition),box-shadow var(--transition),transform var(--transition);
+  position:relative;overflow:hidden;
+}
+.home-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;border-radius:12px 12px 0 0}
+.home-card:hover{border-color:var(--purple-m);box-shadow:0 4px 20px rgba(91,82,200,.12);transform:translateY(-1px)}
+.home-card.c-ams::before{background:var(--purple)}
+.home-card.c-cc::before{background:var(--green)}
+.home-card.c-partner::before{background:var(--blue)}
+.home-card.c-houjin::before{background:var(--olive)}
+.home-card.c-ops::before{background:var(--amber)}
+.home-card.c-ga::before{background:var(--rust)}
+.hc-icon{font-size:22px;margin-bottom:8px}
+.hc-name{font-size:13px;font-weight:700;color:var(--text);margin-bottom:3px}
+.hc-mgr{font-size:11px;color:var(--text3);margin-bottom:6px}
+.hc-tags{display:flex;flex-wrap:wrap;gap:4px}
+.hc-tag{font-size:9px;font-weight:700;padding:2px 6px;border-radius:3px;font-family:var(--mono)}
+
+.quicklinks{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:28px}
+.ql-item{
+  background:var(--surface);border:1px solid var(--border);border-radius:10px;
+  padding:12px 16px;cursor:pointer;display:flex;align-items:center;gap:12px;
+  transition:border-color var(--transition),background var(--transition);font-size:12px;color:var(--text2);
+}
+.ql-item:hover{border-color:var(--purple-m);background:var(--purple-l);color:var(--text)}
+.ql-icon{font-size:18px;flex-shrink:0}
+.ql-text strong{display:block;font-size:12px;font-weight:700;color:var(--text);margin-bottom:2px}
+.ql-text span{font-size:11px;color:var(--text3)}
+.ql-arrow{margin-left:auto;color:var(--text3);font-size:14px}
+
+.rules-highlight{background:var(--navy);border-radius:12px;padding:20px 24px;margin-bottom:28px}
+.rh-title{font-size:11px;font-weight:700;color:#7B74D6;letter-spacing:.08em;text-transform:uppercase;margin-bottom:12px}
+.rh-items{display:flex;flex-direction:column;gap:8px}
+.rh-item{display:flex;align-items:flex-start;gap:10px;font-size:12px;color:#C8C6EC;line-height:1.65}
+.rh-num{width:20px;height:20px;border-radius:50%;background:var(--purple);color:#fff;font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px}
+
+/* ===== CARDS ===== */
+.card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:16px 20px;margin-bottom:14px}
+.card-title{font-size:13px;font-weight:700;color:var(--text);margin-bottom:10px;display:flex;align-items:center;gap:8px}
+.dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+
+/* section headers */
+.sec-head{font-size:13px;font-weight:700;color:var(--text);margin:24px 0 10px;padding-bottom:7px;border-bottom:2px solid var(--border2);display:flex;align-items:center;gap:8px}
+.sec-dot{width:10px;height:10px;border-radius:2px;flex-shrink:0}
+
+/* ===== ORG ===== */
+.lom-badge{display:inline-flex;align-items:center;gap:6px;background:var(--blue-l);color:var(--blue);border-radius:6px;padding:4px 12px;font-size:11px;font-weight:700;margin-bottom:20px}
+
+.ceo-card{
+  background:var(--navy);border:1px solid #26215C;border-radius:12px;
+  text-align:center;padding:14px 32px;display:inline-block;cursor:pointer;
+  transition:opacity var(--transition),transform var(--transition);min-width:200px;
+}
+.ceo-card:hover{opacity:.88;transform:translateY(-1px)}
+.ceo-role{font-size:10px;color:#AFA9EC;margin-bottom:3px}
+.ceo-name{font-size:16px;font-weight:700;color:#EEEDFE;font-family:var(--display)}
+.ceo-sub{font-size:10px;color:#7F77DD;margin-top:3px}
+.vline{width:2px;background:var(--border2);border-radius:1px;margin:0 auto}
+.hline{height:2px;background:var(--border2);border-radius:1px}
+
+.dept-col{flex:1;min-width:130px;max-width:160px}
+.dept-head{border-radius:10px 10px 0 0;border:1px solid var(--border);border-bottom:none;text-align:center;padding:8px 6px 6px;cursor:pointer;transition:opacity var(--transition)}
+.dept-head:hover{opacity:.82}
+.dept-nm{font-size:12px;font-weight:700;line-height:1.35}
+.dept-sb{font-size:10px;color:var(--text3);margin-top:2px}
+.mgr-block{border:1px solid var(--border);border-top:none;border-radius:0 0 10px 10px;padding:6px 6px 10px;background:var(--surface)}
+.mgr-row{display:flex;align-items:center;gap:4px;padding:5px 4px;border-radius:6px;cursor:pointer;transition:background var(--transition)}
+.mgr-row:hover{background:var(--bg)}
+.badge{min-width:32px;text-align:center;font-size:9px;font-weight:700;padding:2px 3px;border-radius:3px;color:#fff;flex-shrink:0;font-family:var(--mono)}
+.r-b{background:#444441}.r-j{background:#5F5E5A}.r-k{background:#888780}.r-s{background:#A8A69E}
+.mgr-info{display:flex;flex-direction:column;overflow:hidden}
+.mgr-nm{font-size:11px;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-weight:500}
+.mgr-nt{font-size:10px;color:var(--text3)}
+.sub-div{border-top:1px dashed var(--border2);margin:5px 4px 4px;padding-top:4px}
+.sub-lbl{font-size:10px;font-weight:700;padding:0 4px 2px}
+
+.d-ams .dept-head{border-color:var(--purple);background:var(--purple-l)}.d-ams .dept-nm{color:#3C3489}.d-ams .mgr-block{border-color:var(--purple)}.d-ams .sub-lbl{color:var(--purple)}
+.d-cc .dept-head{border-color:var(--green);background:var(--green-l)}.d-cc .dept-nm{color:#085041}.d-cc .mgr-block{border-color:var(--green)}
+.d-partner .dept-head{border-color:var(--blue);background:var(--blue-l)}.d-partner .dept-nm{color:#0C447C}.d-partner .mgr-block{border-color:var(--blue)}
+.d-houjin .dept-head{border-color:var(--olive);background:var(--olive-l)}.d-houjin .dept-nm{color:#27500A}.d-houjin .mgr-block{border-color:var(--olive)}
+.d-ops .dept-head{border-color:var(--amber);background:var(--amber-l)}.d-ops .dept-nm{color:#633806}.d-ops .mgr-block{border-color:var(--amber)}
+.d-ga .dept-head{border-color:var(--rust);background:var(--rust-l)}.d-ga .dept-nm{color:#712B13}.d-ga .mgr-block{border-color:var(--rust)}
+
+.auth-box{margin-top:20px;background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:16px 20px}
+.auth-box h4{font-size:12px;font-weight:700;margin-bottom:12px}
+.auth-grid{display:flex;flex-wrap:wrap;gap:12px}
+.auth-item{flex:1;min-width:180px;font-size:11px;color:var(--text2);line-height:1.75}
+.auth-item strong{color:var(--text);font-weight:700;display:block;margin-bottom:2px}
+
+.detail-panel{margin-top:16px;border-radius:10px;border:1px solid var(--border);background:var(--surface);padding:16px 20px;display:none}
+.detail-panel.on{display:block;animation:fadeIn .18s ease}
+@keyframes fadeIn{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+.detail-hd{font-size:13px;font-weight:700;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center}
+.detail-close{font-size:11px;color:var(--text3);cursor:pointer;padding:4px 8px;border-radius:4px;border:1px solid var(--border);transition:background var(--transition)}
+.detail-close:hover{background:var(--bg);color:var(--text)}
+.detail-bd{font-size:12px;color:var(--text2);line-height:1.85}
+
+/* ===== TABLE ===== */
+.tbl-wrap{overflow-x:auto;border-radius:10px;border:1px solid var(--border);box-shadow:0 1px 4px rgba(0,0,0,.04)}
+table{width:100%;border-collapse:collapse;font-size:12px;background:var(--surface)}
+th{background:var(--navy);color:#EEEDFE;font-weight:700;padding:10px 12px;text-align:left;white-space:nowrap;border-right:1px solid rgba(255,255,255,.1);font-size:11px}
+th:last-child{border-right:none}
+td{padding:9px 12px;border-bottom:1px solid var(--border);border-right:1px solid var(--bg2);vertical-align:top;color:var(--text2);line-height:1.65}
+td:last-child{border-right:none}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:var(--bg)}
+.td-dept{font-weight:700;color:var(--text);white-space:nowrap}
+.mx-cell{text-align:center;font-weight:700;font-family:var(--mono);font-size:13px;white-space:nowrap}
+.mx-kk{color:#C25B00;background:#FFF3E0}
+.mx-ok{color:#1A6B2A;background:#F0FBF2}
+.mx-hj{color:var(--text3);background:var(--bg2)}
+.mx-no{color:#CCC;background:#fff}
+.lv{display:inline-block;padding:2px 8px;border-radius:12px;font-size:10px;font-weight:700;font-family:var(--mono);white-space:nowrap}
+.lv1{background:#1A1A40;color:#AFA9EC}.lv1b{background:#2D2870;color:#CECBF6}.lv2{background:#444441;color:#fff}.lv3{background:#5F5E5A;color:#fff}
+.lv4{background:#888780;color:#fff}.lv5{background:#A8A69E;color:#fff}.lv6{background:#C9C5B8;color:#444}.lv7{background:var(--bg2);color:var(--text2)}
+
+/* ===== FLOW ===== */
+.flow-rule{background:var(--surface);border-left:3px solid var(--purple);border-radius:0 8px 8px 0;padding:12px 16px;margin-bottom:10px;font-size:12px;color:var(--text2);line-height:1.75;border:1px solid var(--border);border-left-width:3px}
+.flow-rule strong{color:var(--text);font-weight:700}
+.flow-num{display:inline-flex;width:20px;height:20px;border-radius:50%;background:var(--purple);color:#fff;font-size:10px;font-weight:700;align-items:center;justify-content:center;margin-right:8px;flex-shrink:0}
+.flow-item{display:flex;align-items:flex-start}
+
+/* ===== NOTICES ===== */
+.notice{background:var(--amber-l);border:1px solid #E8A020;border-radius:8px;padding:12px 16px;font-size:12px;color:#633806;margin-bottom:16px;display:flex;gap:10px;align-items:flex-start}
+.notice-icon{font-size:16px;flex-shrink:0}
+
+/* ===== TAGS ===== */
+.tag{display:inline-block;padding:2px 8px;border-radius:4px;font-size:10px;font-weight:700;margin-right:4px;margin-bottom:4px}
+.tag-jsox{background:#FFF3E0;color:#C25B00}
+.tag-important{background:#FDEEEE;color:#C0392B}
+
+/* ===== LEGEND ===== */
+.legend{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:20px}
+.legend-item{display:flex;align-items:center;gap:6px;font-size:12px}
+
+/* ===== SCROLL TO TOP ===== */
+.back-to-top{
+  position:fixed;bottom:24px;right:24px;
+  background:var(--purple);color:#fff;border:none;border-radius:8px;
+  width:36px;height:36px;cursor:pointer;font-size:14px;
+  display:flex;align-items:center;justify-content:center;
+  opacity:0;transition:opacity var(--transition);z-index:150;
+  box-shadow:0 4px 12px rgba(91,82,200,.4);
+}
+.back-to-top.visible{opacity:1}
+.back-to-top:hover{background:var(--purple-m)}
+
+/* ===== INLINE ANCHOR NAV (for long tabs) ===== */
+.anchor-nav{
+  display:flex;gap:6px;flex-wrap:wrap;
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:8px;padding:10px 14px;margin-bottom:20px;
+}
+.anchor-btn{
+  font-size:11px;font-weight:500;color:var(--text3);
+  padding:3px 10px;border-radius:4px;border:1px solid transparent;
+  cursor:pointer;transition:all var(--transition);white-space:nowrap;
+  background:none;font-family:var(--font);
+}
+.anchor-btn:hover{background:var(--purple-l);color:var(--purple);border-color:var(--purple-m)}
+
+.eg-kanki-wrap{background:var(--navy);border-radius:12px;padding:20px 24px;margin-bottom:20px;border:1px solid rgba(255,255,255,.08)}
+.eg-kanki-title{font-size:12px;font-weight:700;color:#AFA9EC;letter-spacing:.06em;text-transform:uppercase;margin-bottom:14px}
+.eg-kanki-body{display:flex;flex-direction:column;gap:0}
+.eg-kanki-section{padding:14px 16px;border-radius:8px;background:rgba(255,255,255,.05)}
+.eg-kanki-section p{font-size:12px;color:#C8C6EC;line-height:1.85}
+.eg-kanki-section strong{color:#EEEDFE}
+.eg-kanki-sec-title{font-size:10px;font-weight:700;color:#7B74D6;letter-spacing:.06em;margin-bottom:8px;text-transform:uppercase}
+.eg-kanki-divider{height:8px}
+.eg-kanki-danger{background:rgba(153,60,29,.2);border:1px solid rgba(153,60,29,.4)}
+.eg-kanki-danger .eg-kanki-sec-title{color:#F4A090}
+.eg-kanki-danger p{color:#FAECE7}
+.eg-kanki-danger strong{color:#fff}
+
+/* ===== EIGYO RULES ===== */
+.eg-flow-wrap{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:20px 24px;margin-bottom:16px}
+.eg-flow-start{background:var(--navy);color:#EEEDFE;border-radius:8px;padding:10px 20px;text-align:center;font-weight:700;font-size:13px;display:inline-block;margin:0 auto;display:block;width:fit-content;margin:0 auto}
+.eg-flow-arrow{text-align:center;font-size:20px;color:var(--border2);margin:6px 0}
+.eg-flow-steps{display:flex;flex-direction:column;gap:6px}
+.eg-flow-step{display:flex;align-items:flex-start;gap:12px;background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:10px 14px}
+.eg-flow-connector{text-align:center;font-size:16px;color:var(--border2);margin:2px 0}
+.eg-step-num{background:var(--purple);color:#fff;font-size:10px;font-weight:700;padding:3px 7px;border-radius:4px;flex-shrink:0;margin-top:1px;font-family:var(--mono)}
+.eg-step-title{font-size:12px;font-weight:700;color:var(--text);margin-bottom:3px}
+.eg-step-desc{font-size:11px;color:var(--text3);line-height:1.65}
+.eg-flow-result{display:flex;align-items:center;justify-content:center;gap:16px;margin-top:4px}
+.eg-result-ok{background:#E1F5EE;border:1px solid var(--green);border-radius:8px;padding:10px 20px;text-align:center;font-size:12px;color:#085041;line-height:1.6}
+.eg-result-ng{background:var(--amber-l);border:1px solid #E8A020;border-radius:8px;padding:10px 20px;text-align:center;font-size:12px;color:#633806;line-height:1.6}
+.eg-result-sep{font-size:18px;color:var(--border2)}
+
+.eg-rule-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:12px;margin-bottom:8px}
+.eg-rule-card{background:var(--surface);border:1px solid var(--border);border-left:4px solid var(--purple);border-radius:0 10px 10px 0;padding:14px 16px}
+.eg-rule-title{font-size:12px;font-weight:700;color:var(--text);margin-bottom:10px}
+.eg-rule-body{display:flex;flex-direction:column;gap:7px}
+.eg-rule-item{display:flex;align-items:flex-start;gap:8px;font-size:11px;color:var(--text2);line-height:1.65}
+.eg-rule-label{flex-shrink:0;font-size:9px;font-weight:700;padding:2px 6px;border-radius:3px;background:var(--bg2);color:var(--text2);font-family:var(--mono);margin-top:1px;white-space:nowrap}
+.eg-label-ok{background:#E1F5EE;color:#085041}
+.eg-label-warn{background:var(--amber-l);color:#633806}
+.eg-label-ng{background:var(--rust-l);color:#712B13}
+.eg-rule-note{font-size:10px;color:var(--text3);line-height:1.65;padding:6px 8px;background:var(--bg);border-radius:4px;margin-top:4px}
+
+.eg-formula{background:var(--bg);border-radius:6px;padding:10px 12px;font-family:var(--mono);font-size:11px}
+.eg-formula-row{display:flex;align-items:center;gap:8px;padding:2px 0;color:var(--text2)}
+.eg-formula-op{color:var(--text3);width:16px;flex-shrink:0}
+.eg-formula-label{color:var(--text2)}
+.eg-formula-divider{height:1px;background:var(--border2);margin:6px 0}
+.eg-formula-result .eg-formula-label{color:var(--purple);font-weight:700}
+
+.eg-judge-ok,.eg-judge-ng{flex:1;border-radius:6px;padding:8px 12px;font-size:11px;text-align:center;line-height:1.65}
+.eg-judge-ok{background:#E1F5EE;color:#085041;border:1px solid var(--green)}
+.eg-judge-ng{background:var(--amber-l);color:#633806;border:1px solid #E8A020}
+
+.eg-risk-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:8px}
+.eg-risk-card{border-radius:10px;padding:16px 18px;border:1px solid var(--border)}
+.eg-risk-safe{background:#E1F5EE;border-color:var(--green)}
+.eg-risk-danger{background:var(--rust-l);border-color:var(--rust)}
+.eg-risk-badge{display:inline-block;font-size:11px;font-weight:700;padding:3px 10px;border-radius:4px;margin-bottom:6px;font-family:var(--mono)}
+.eg-risk-safe .eg-risk-badge{background:var(--green);color:#fff}
+.eg-risk-danger .eg-risk-badge{background:var(--rust);color:#fff}
+.eg-risk-label{font-size:14px;font-weight:700;margin-bottom:6px}
+.eg-risk-safe .eg-risk-label{color:#085041}
+.eg-risk-danger .eg-risk-label{color:#712B13}
+.eg-risk-desc{font-size:11px;line-height:1.7;margin-bottom:8px}
+.eg-risk-safe .eg-risk-desc{color:#0F6E56}
+.eg-risk-danger .eg-risk-desc{color:#993C1D}
+.eg-risk-rule{font-size:11px;font-weight:700;color:#085041}
+.eg-risk-rule-box{background:rgba(0,0,0,.06);border-radius:6px;padding:8px 10px;display:flex;flex-direction:column;gap:5px;margin-bottom:8px}
+.eg-risk-rule-item{font-size:11px;color:#712B13;line-height:1.6}
+.eg-alt,.eg-risk-alt{background:rgba(255,255,255,.5);border-radius:6px;padding:8px 10px;margin-top:6px}
+.eg-risk-alt-title{font-size:10px;font-weight:700;color:#712B13;margin-bottom:3px}
+.eg-risk-alt-desc{font-size:10px;color:#993C1D;line-height:1.65}
+
+@media(max-width:700px){
+  .eg-risk-grid{grid-template-columns:1fr}
+}
+
+/* ===== YAKUSHOKU REDESIGN ===== */
+.yaku-summary-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:10px;margin-bottom:28px}
+.yaku-summary-card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:14px 16px;position:relative;overflow:hidden}
+.yaku-summary-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px}
+.yaku-sc-lv{margin-bottom:6px}
+.yaku-sc-name{font-size:15px;font-weight:700;color:var(--text);margin-bottom:4px;font-family:var(--display)}
+.yaku-sc-role{font-size:11px;color:var(--text3);line-height:1.65}
+.yaku-sc-resp{font-size:11px;color:var(--text2);margin-top:6px;padding-top:6px;border-top:1px solid var(--border);line-height:1.65}
+
+.yaku-matrix-wrap{overflow-x:auto;border-radius:10px;border:1px solid var(--border);margin-bottom:20px;box-shadow:0 1px 4px rgba(0,0,0,.04)}
+.yaku-matrix{width:100%;border-collapse:collapse;font-size:11px;background:var(--surface);min-width:900px}
+.yaku-matrix th{background:var(--navy);color:#EEEDFE;font-weight:700;padding:9px 10px;text-align:left;border-right:1px solid rgba(255,255,255,.1);white-space:nowrap;font-size:10px}
+.yaku-matrix th:last-child{border-right:none}
+.yaku-matrix th.th-cat{width:90px;background:#0C0E28}
+.yaku-matrix th.th-item{width:80px;background:#13153A}
+.yaku-matrix td{padding:8px 10px;border-bottom:1px solid var(--border);border-right:1px solid var(--bg2);vertical-align:top;color:var(--text2);line-height:1.6;font-size:11px}
+.yaku-matrix td:last-child{border-right:none}
+.yaku-matrix tr:last-child td{border-bottom:none}
+.yaku-matrix tr:hover td{background:var(--bg)}
+.ym-cat{font-weight:700;color:var(--text);font-size:11px;background:var(--bg2)!important;text-align:center;writing-mode:vertical-rl;letter-spacing:.1em;white-space:nowrap;padding:12px 6px!important}
+.ym-item{font-weight:600;color:var(--text2);background:var(--bg)!important;white-space:nowrap;font-size:10px;min-width:70px}
+.ym-cell{font-size:11px;color:var(--text2);line-height:1.6;min-width:120px}
+.ym-cell.ym-empty{color:var(--text3);font-style:italic;font-size:10px}
+
+/* ===== SHINSEI CARDS ===== */
+.shinsei-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:10px;margin-bottom:8px}
+.sh-card{
+  background:var(--surface);border:1px solid var(--border);border-radius:10px;
+  padding:14px 16px;display:flex;align-items:flex-start;gap:12px;
+  transition:border-color var(--transition),box-shadow var(--transition),transform var(--transition);
+  position:relative;
+}
+.sh-card:hover{border-color:var(--purple-m);box-shadow:0 3px 12px rgba(91,82,200,.1);transform:translateY(-1px)}
+.sh-card-icon{font-size:22px;flex-shrink:0;margin-top:1px}
+.sh-card-body{flex:1;min-width:0}
+.sh-card-name{font-size:13px;font-weight:700;color:var(--text);margin-bottom:3px}
+.sh-card-desc{font-size:11px;color:var(--text3);line-height:1.6;margin-bottom:8px}
+.sh-card-meta{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.sh-card-dept{font-size:10px;font-weight:700;padding:2px 7px;border-radius:3px;font-family:var(--mono)}
+.sh-card-link{
+  display:inline-flex;align-items:center;gap:4px;
+  font-size:11px;font-weight:700;color:var(--purple);
+  padding:4px 10px;border-radius:5px;border:1px solid var(--purple-m);
+  cursor:pointer;transition:background var(--transition),color var(--transition);
+  text-decoration:none;white-space:nowrap;
+}
+.sh-card-link:hover{background:var(--purple);color:#fff}
+.sh-card-link.disabled{color:var(--text3);border-color:var(--border);cursor:default;pointer-events:none}
+.sh-badge-url{background:var(--blue-l);color:var(--blue)}
+.sh-badge-file{background:var(--green-l);color:var(--green)}
+.sh-badge-form{background:var(--purple-l);color:var(--purple)}
+.sh-badge-chat{background:var(--amber-l);color:var(--amber)}
+.sh-note{font-size:10px;color:var(--text3);margin-top:4px;line-height:1.5}
+.sh-wip{position:absolute;top:10px;right:10px;font-size:9px;font-weight:700;background:var(--bg2);color:var(--text3);border-radius:3px;padding:2px 6px;font-family:var(--mono)}
+
+/* ===== RESPONSIVE ===== */
+@media(max-width:900px){
+  :root{--sidebar:0px}
+  .sidebar{display:none}
+  .main{margin-left:0}
+  .home-grid{grid-template-columns:repeat(2,1fr)}
+  .tab-content{padding:20px 16px 48px}
+}
+@media(max-width:600px){
+  .home-grid{grid-template-columns:1fr}
+  .quicklinks{grid-template-columns:1fr}
+  .search-wrap{max-width:200px}
+}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header class="site-header">
+  <a class="logo" href="#" onclick="switchTab('home',null);return false">
+    <div class="logo-mark">S</div>
+    <div>
+      <div class="logo-text">SHC PORTAL</div>
+      <div class="logo-sub">組織・職務権限 総合案内</div>
+    </div>
+  </a>
+
+  <div class="search-wrap">
+    <span class="search-icon">🔍</span>
+    <input class="search-input" type="text" id="searchInput" placeholder="部署名・人名・ルールを検索..." autocomplete="off">
+    <div class="search-results" id="searchResults"></div>
+  </div>
+
+  <div class="header-right">
+    <span class="draft-badge">たたき台版</span>
+  </div>
+</header>
+
+<!-- LAYOUT -->
+<div class="layout">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <nav>
+      <div class="nav-section">
+        <div class="nav-section-label">メニュー</div>
+        <a class="nav-item active" id="nav-home" onclick="switchTab('home',this);return false" href="#">
+          <span class="nav-icon">🏠</span>ホーム
+        </a>
+        <a class="nav-item" id="nav-org" onclick="switchTab('org',this);return false" href="#">
+          <span class="nav-icon">🏢</span>① 組織図
+        </a>
+        <a class="nav-item" id="nav-shokiki" onclick="switchTab('shokiki',this);return false" href="#">
+          <span class="nav-icon">📋</span>② 職域定義書
+        </a>
+        <div class="nav-sub" id="sub-ams" onclick="switchTab('shokiki',null);scrollToAnchor('sk-ams')">└ AMS事業部</div>
+        <div class="nav-sub" id="sub-cc" onclick="switchTab('shokiki',null);scrollToAnchor('sk-cc')">└ コールセンター</div>
+        <div class="nav-sub" id="sub-partner" onclick="switchTab('shokiki',null);scrollToAnchor('sk-partner')">└ パートナー事業部</div>
+        <div class="nav-sub" id="sub-houjin" onclick="switchTab('shokiki',null);scrollToAnchor('sk-houjin')">└ 法人営業部</div>
+        <div class="nav-sub" id="sub-ops" onclick="switchTab('shokiki',null);scrollToAnchor('sk-ops')">└ 業務管理部</div>
+        <div class="nav-sub" id="sub-ga" onclick="switchTab('shokiki',null);scrollToAnchor('sk-ga')">└ 経営管理部</div>
+
+        <a class="nav-item" id="nav-yakushoku" onclick="switchTab('yakushoku',this);return false" href="#">
+          <span class="nav-icon">🎖️</span>③ 役職定義書
+        </a>
+        <div class="nav-sub" onclick="switchTab('yakushoku',null);scrollToAnchor('yk-summary')">└ 役職サマリー</div>
+        <div class="nav-sub" onclick="switchTab('yakushoku',null);scrollToAnchor('yk-kadai')">└ 課題・問題点</div>
+        <div class="nav-sub" onclick="switchTab('yakushoku',null);scrollToAnchor('yk-gyomu')">└ 業務取り組み</div>
+        <div class="nav-sub" onclick="switchTab('yakushoku',null);scrollToAnchor('yk-team')">└ チームワーク</div>
+
+        <a class="nav-item" id="nav-flow" onclick="switchTab('flow',this);return false" href="#">
+          <span class="nav-icon">🔀</span>④ 業務連携フロー
+        </a>
+        <a class="nav-item" id="nav-matrix" onclick="switchTab('matrix',this);return false" href="#">
+          <span class="nav-icon">⚡</span>⑤ 職務権限マトリクス
+        </a>
+        <div class="nav-sub" onclick="switchTab('matrix',null);scrollToAnchor('mx-keiyaku')">└ 契約・取引</div>
+        <div class="nav-sub" onclick="switchTab('matrix',null);scrollToAnchor('mx-jinji')">└ 人事・労務</div>
+        <div class="nav-sub" onclick="switchTab('matrix',null);scrollToAnchor('mx-jikou')">└ 事故・トラブル</div>
+        <a class="nav-item" id="nav-shouko" onclick="switchTab('shouko',this);return false" href="#">
+          <span class="nav-icon">📁</span>⑥ 報告・証跡管理
+        </a>
+        <a class="nav-item" id="nav-shinsei" onclick="switchTab('shinsei',this);return false" href="#">
+          <span class="nav-icon">🔗</span>⑦ 申請・マニュアル
+        </a>
+        <div class="nav-sub" onclick="switchTab('shinsei',null);scrollToAnchor('sh-kisoku')">└ 就業規則・社内規程</div>
+        <div class="nav-sub" onclick="switchTab('shinsei',null);scrollToAnchor('sh-naibu')">└ 内部統制・JSOX</div>
+        <div class="nav-sub" onclick="switchTab('shinsei',null);scrollToAnchor('sh-gyomu-manual')">└ 管理業務マニュアル</div>
+        <div class="nav-sub" onclick="switchTab('shinsei',null);scrollToAnchor('sh-keihi')">└ 経費・支払申請</div>
+        <div class="nav-sub" onclick="switchTab('shinsei',null);scrollToAnchor('sh-kyuka')">└ 休暇・勤怠申請</div>
+        <div class="nav-sub" onclick="switchTab('shinsei',null);scrollToAnchor('sh-gyomu')">└ 業務申請・依頼</div>
+        <a class="nav-item" id="nav-eigyo" onclick="switchTab('eigyo',this);return false" href="#">
+          <span class="nav-icon">💹</span>⑧ 価格・手数料設定ルール
+        </a>
+        <div class="nav-sub" onclick="switchTab('eigyo',null);scrollToAnchor('eg-common')">└ 共通判断基準</div>
+        <div class="nav-sub" onclick="switchTab('eigyo',null);scrollToAnchor('eg-price')">└ 提供価格設定</div>
+        <div class="nav-sub" onclick="switchTab('eigyo',null);scrollToAnchor('eg-tesuryo')">└ 支払手数料設定</div>
+        <div class="nav-sub" onclick="switchTab('eigyo',null);scrollToAnchor('eg-modoshi')">└ 戻入・80%ルール</div>
+        <div class="nav-sub" onclick="switchTab('eigyo',null);scrollToAnchor('eg-timing')">└ 支払タイミング</div>
+        <a class="nav-item" id="nav-shiiire" onclick="switchTab('shiiire',this);return false" href="#">
+          <span class="nav-icon">🏪</span>⑨ 仕入れ・上位店取引ルール
+        </a>
+        <div class="nav-sub" onclick="switchTab('shiiire',null);scrollToAnchor('si-kengen')">└ 商材別決裁者</div>
+        <div class="nav-sub" onclick="switchTab('shiiire',null);scrollToAnchor('si-flow')">└ 新規取引承認フロー</div>
+        <div class="nav-sub" onclick="switchTab('shiiire',null);scrollToAnchor('si-henko')">└ 条件合意・変更ルール</div>
+        <div class="nav-sub" onclick="switchTab('shiiire',null);scrollToAnchor('si-kisoku')">└ 記録・証跡管理</div>
+        <div class="nav-sub" onclick="switchTab('shiiire',null);scrollToAnchor('si-fuuin')">└ 封緘・情報共有ルール</div>
+      </div>
+
+      <div class="nav-divider"></div>
+      <div class="nav-bottom">
+        <div class="nav-update">
+          <strong>更新情報</strong>
+          たたき台版制定中<br>正式版制定後に更新予定
+        </div>
+      </div>
+    </nav>
+  </aside>
+
+  <!-- MAIN CONTENT -->
+  <main class="main">
+
+    <!-- HOME -->
+    <div id="tab-home" class="tab-content active">
+      <div class="breadcrumb"><span class="breadcrumb-cur">ホーム</span></div>
+      <div class="page-title">SHC 社内ポータル</div>
+      <div class="page-desc">LOMグループ（株式会社ラストワンマイル）傘下　／　組織・職務権限 総合案内</div>
+
+      <div class="rules-highlight">
+        <div class="rh-title">⚡ 指示系統の基本原則（全社共通）</div>
+        <div class="rh-items">
+          <div class="rh-item"><div class="rh-num">①</div><span><strong>命令系統の一元化：</strong>報告・指示は必ず直属の上長を通じること。飛び級指示・飛び級報告は原則禁止。上長を経由せず報告した場合は、上長へも同内容を必ず共有すること。</span></div>
+          <div class="rh-item"><div class="rh-num">②</div><span><strong>権限と責任の一致：</strong>業務を指示する者がその結果に責任を負う。権限のない者が指示を出してはならない。管理者は部下の成果物の内容・正確性について最終責任を負う。</span></div>
+          <div class="rh-item"><div class="rh-num">③</div><span><strong>承認証跡の確保（JSOX対応）：</strong>意思決定・承認の事実を必ず記録として残す。口頭のみの指示・承認は不可。報告書類には作成者・確認者・提出日を明記すること。</span></div>
+          <div class="rh-item"><div class="rh-num">④</div><span><strong>部門間依頼は管理者経由：</strong>他部署への業務依頼は、依頼元管理者 → 依頼先管理者を通じて行う。現場同士での直接調整は報告・記録を伴うこと。</span></div>
+          <div class="rh-item"><div class="rh-num">⑤</div><span><strong>エスカレーション義務：</strong>問題・リスクを認知した者は、自己判断で処理せず速やかに上位者へ報告する義務を負う。特に事故・クレーム・コンプライアンス違反は即時報告。</span></div>
+          <div class="rh-item"><div class="rh-num">⑥</div><span><strong>情報の正確性責任：</strong>上位者へ提出する報告・資料は、提出者（管理者）が内容を確認・検証したうえで提出する。未確認のまま提出することは禁止。</span></div>
+        </div>
+
+        <div style="margin-top:16px;border-top:1px solid rgba(255,255,255,.1);padding-top:14px">
+          <div class="rh-title" style="margin-bottom:10px">📋 例外・特別ルール</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+            <div style="background:rgba(255,255,255,.06);border-radius:8px;padding:10px 13px;font-size:11px;color:#C8C6EC;line-height:1.75">
+              <div style="font-size:10px;font-weight:700;color:#AFA9EC;margin-bottom:5px;letter-spacing:.05em">🚨 緊急時・重大事故</div>
+              緊急事態・重大事故発生時は社長への即時報告を認める。ただし上長へも同時共有を義務とする。
+            </div>
+            <div style="background:rgba(255,255,255,.06);border-radius:8px;padding:10px 13px;font-size:11px;color:#C8C6EC;line-height:1.75">
+              <div style="font-size:10px;font-weight:700;color:#AFA9EC;margin-bottom:5px;letter-spacing:.05em">👑 社長直轄指示案件</div>
+              社長から直接指示があった業務については、ライン外での報告・連絡を認める。関係する上長への情報共有は必須。
+            </div>
+            <div style="background:rgba(255,255,255,.06);border-radius:8px;padding:10px 13px;font-size:11px;color:#C8C6EC;line-height:1.75">
+              <div style="font-size:10px;font-weight:700;color:#AFA9EC;margin-bottom:5px;letter-spacing:.05em">🔀 横断プロジェクト・チーム</div>
+              複数事業部にまたがる取り組みは、関係部署管理者が合意した連携ルールに従う。各部署管理者への情報共有は常に必須。
+            </div>
+            <div style="background:rgba(255,255,255,.06);border-radius:8px;padding:10px 13px;font-size:11px;color:#C8C6EC;line-height:1.75">
+              <div style="font-size:10px;font-weight:700;color:#AFA9EC;margin-bottom:5px;letter-spacing:.05em">💼 営業案件の現場判断</div>
+              顧客対応・商談における現場判断は認める。ただし契約・条件確定・値引き等は必ず管理者承認を経てから確定すること。
+            </div>
+          </div>
+        </div>
+
+        <div style="margin-top:12px;border-top:1px solid rgba(255,255,255,.1);padding-top:12px">
+          <div class="rh-title" style="margin-bottom:10px">🔒 内部通報ルール</div>
+          <div style="font-size:11px;color:#C8C6EC;line-height:1.85;margin-bottom:10px">
+            コンプライアンス違反・不正行為等を認知した場合は、以下いずれかのルートで報告すること。<strong style="color:#EEEDFE">通報者から社長への直接報告ルートは設けない。</strong>社長への報告は経営管理部（伊藤部長）が内容を精査・判断したうえで実施する。
+          </div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap">
+            <div style="flex:1;min-width:160px;background:rgba(91,82,200,.25);border:1px solid rgba(91,82,200,.4);border-radius:8px;padding:10px 13px;font-size:11px;color:#CECBF6;line-height:1.7">
+              <div style="font-weight:700;margin-bottom:3px">ルート①（最優先）</div>
+              親会社が定めた<br><strong style="color:#EEEDFE">内部通報専用窓口</strong>
+            </div>
+            <div style="flex:1;min-width:160px;background:rgba(91,82,200,.25);border:1px solid rgba(91,82,200,.4);border-radius:8px;padding:10px 13px;font-size:11px;color:#CECBF6;line-height:1.7">
+              <div style="font-weight:700;margin-bottom:3px">ルート②</div>
+              経営管理部<br><strong style="color:#EEEDFE">伊藤博之部長</strong>へ直接報告
+            </div>
+            <div style="flex:1;min-width:160px;background:rgba(91,82,200,.25);border:1px solid rgba(91,82,200,.4);border-radius:8px;padding:10px 13px;font-size:11px;color:#CECBF6;line-height:1.7">
+              <div style="font-weight:700;margin-bottom:3px">ルート③</div>
+              月次の<strong style="color:#EEEDFE">日常点検報告</strong><br>にて報告・指摘
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="sec-head"><div class="sec-dot" style="background:var(--purple)"></div>各事業部 クイックアクセス</div>
+      <div class="home-grid">
+        <div class="home-card c-ams" onclick="switchTab('shokiki',null);scrollToAnchor('sk-ams')">
+          <div class="hc-icon">🏠</div>
+          <div class="hc-name">AMS事業部</div>
+          <div class="hc-mgr">部長：外﨑 幹也（取締役）</div>
+          <div class="hc-tags">
+            <span class="hc-tag" style="background:#EEEDFE;color:#3C3489">営業</span>
+            <span class="hc-tag" style="background:#EEEDFE;color:#3C3489">工事課</span>
+            <span class="hc-tag" style="background:#EEEDFE;color:#3C3489">管理課</span>
+          </div>
+        </div>
+        <div class="home-card c-cc" onclick="switchTab('shokiki',null);scrollToAnchor('sk-cc')">
+          <div class="hc-icon">📞</div>
+          <div class="hc-name">コールセンター事業部</div>
+          <div class="hc-mgr">部長：池田 祐介　次長：笠原 康平</div>
+          <div class="hc-tags">
+            <span class="hc-tag" style="background:var(--green-l);color:#085041">電話対応</span>
+            <span class="hc-tag" style="background:var(--green-l);color:#085041">生活サービス</span>
+          </div>
+        </div>
+        <div class="home-card c-partner" onclick="switchTab('shokiki',null);scrollToAnchor('sk-partner')">
+          <div class="hc-icon">🤝</div>
+          <div class="hc-name">パートナー事業部</div>
+          <div class="hc-mgr">部長：横井 駿　主任：市 奈緒美</div>
+          <div class="hc-tags">
+            <span class="hc-tag" style="background:var(--blue-l);color:#0C447C">代理店開拓</span>
+            <span class="hc-tag" style="background:var(--blue-l);color:#0C447C">回線</span>
+          </div>
+        </div>
+        <div class="home-card c-houjin" onclick="switchTab('shokiki',null);scrollToAnchor('sk-houjin')">
+          <div class="hc-icon">🏢</div>
+          <div class="hc-name">法人営業部</div>
+          <div class="hc-mgr">部長：永野 恭平</div>
+          <div class="hc-tags">
+            <span class="hc-tag" style="background:var(--olive-l);color:#27500A">法人</span>
+            <span class="hc-tag" style="background:var(--olive-l);color:#27500A">DXツール</span>
+          </div>
+        </div>
+        <div class="home-card c-ops" onclick="switchTab('shokiki',null);scrollToAnchor('sk-ops')">
+          <div class="hc-icon">⚙️</div>
+          <div class="hc-name">業務管理部</div>
+          <div class="hc-mgr">部長：黒川 健一郎</div>
+          <div class="hc-tags">
+            <span class="hc-tag" style="background:var(--amber-l);color:#633806">投入</span>
+            <span class="hc-tag" style="background:var(--amber-l);color:#633806">請求管理</span>
+            <span class="hc-tag" style="background:var(--amber-l);color:#633806">未収</span>
+          </div>
+        </div>
+        <div class="home-card c-ga" onclick="switchTab('shokiki',null);scrollToAnchor('sk-ga')">
+          <div class="hc-icon">📊</div>
+          <div class="hc-name">経営管理部</div>
+          <div class="hc-mgr">部長：伊藤 博之</div>
+          <div class="hc-tags">
+            <span class="hc-tag" style="background:var(--rust-l);color:#712B13">経理</span>
+            <span class="hc-tag" style="background:var(--rust-l);color:#712B13">労務</span>
+            <span class="hc-tag" style="background:var(--rust-l);color:#712B13">JSOX</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="sec-head"><div class="sec-dot" style="background:var(--amber)"></div>よく参照されるドキュメント</div>
+      <div class="quicklinks">
+        <div class="ql-item" onclick="switchTab('matrix',null)">
+          <div class="ql-icon">⚡</div>
+          <div class="ql-text"><strong>職務権限マトリクス</strong><span>誰が何を承認できるか一覧で確認</span></div>
+          <div class="ql-arrow">→</div>
+        </div>
+        <div class="ql-item" onclick="switchTab('flow',null)">
+          <div class="ql-icon">🔀</div>
+          <div class="ql-text"><strong>業務連携フロー</strong><span>部署をまたぐ依頼の手順・ルール</span></div>
+          <div class="ql-arrow">→</div>
+        </div>
+        <div class="ql-item" onclick="switchTab('shouko',null)">
+          <div class="ql-icon">📁</div>
+          <div class="ql-text"><strong>報告・証跡管理ルール</strong><span>書類の作成者・確認者・保管期間</span></div>
+          <div class="ql-arrow">→</div>
+        </div>
+        <div class="ql-item" onclick="switchTab('shinsei',null)">
+          <div class="ql-icon">🔗</div>
+          <div class="ql-text"><strong>申請・マニュアル</strong><span>就業規則・JSOX・管理業務マニュアル・各種申請フォーム</span></div>
+          <div class="ql-arrow">→</div>
+        </div>
+        <div class="ql-item" onclick="switchTab('eigyo',null)">
+          <div class="ql-icon">💹</div>
+          <div class="ql-text"><strong>価格・手数料設定ルール</strong><span>共通判断基準・提供価格・支払手数料の設定ルール</span></div>
+          <div class="ql-arrow">→</div>
+        </div>
+        <div class="ql-item" onclick="switchTab('shiiire',null)">
+          <div class="ql-icon">🏪</div>
+          <div class="ql-text"><strong>仕入れ・上位店取引ルール</strong><span>新規取引承認・条件変更・証跡管理</span></div>
+          <div class="ql-arrow">→</div>
+        </div>
+        <div class="ql-item" onclick="switchTab('org',null)">
+          <div class="ql-icon">🏢</div>
+          <div class="ql-text"><strong>組織図</strong><span>指示経路・部署構成を確認</span></div>
+          <div class="ql-arrow">→</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ① 組織図 -->
+    <div id="tab-org" class="tab-content">
+      <div class="breadcrumb"><span onclick="switchTab('home',null)" style="cursor:pointer;color:var(--text3)">ホーム</span><span class="breadcrumb-sep">›</span><span class="breadcrumb-cur">① 組織図</span></div>
+      <div class="page-title">組織図（新体制）</div>
+      <div class="page-desc">権限範囲・指示経路明確化版　※各部署・役職をクリックすると詳細を表示</div>
+      <div class="lom-badge">🏷️ LOMグループ（株式会社ラストワンマイル）傘下</div>
+
+      <!-- 第1階層：代表取締役 -->
+      <div style="display:flex;justify-content:center;margin-bottom:0">
+        <div class="ceo-card" onclick="showDetail('ceo')">
+          <div class="ceo-role">代表取締役</div>
+          <div class="ceo-name">須田 宗樹</div>
+          <div class="ceo-sub">全事業部への最終意思決定権</div>
+        </div>
+      </div>
+
+      <!-- 代表→第2階層 -->
+      <div style="display:flex;justify-content:center"><div class="vline" style="height:20px"></div></div>
+      <div class="hline" style="max-width:680px;margin:0 auto 0"></div>
+      <div style="display:flex;justify-content:center;max-width:680px;margin:0 auto">
+        <div class="vline" style="height:20px;margin-right:160px"></div>
+        <div class="vline" style="height:20px;margin-left:160px"></div>
+      </div>
+
+      <!-- 第2階層：経営補佐・経営管理部 -->
+      <div style="display:flex;justify-content:center;gap:16px;max-width:680px;margin:0 auto 0;align-items:flex-start">
+
+        <!-- 取締役・経営補佐 -->
+        <div style="flex:1;max-width:300px">
+          <div style="background:var(--navy2);border:1px solid #3A386A;border-radius:10px 10px 0 0;text-align:center;padding:8px 6px 6px;cursor:pointer;transition:opacity .15s" onclick="showDetail('itoMiwa')" onmouseover="this.style.opacity='.82'" onmouseout="this.style.opacity='1'">
+            <div style="font-size:10px;color:#AFA9EC;margin-bottom:2px">取締役・経営補佐</div>
+            <div style="font-size:12px;font-weight:700;color:#EEEDFE">伊藤 美和</div>
+            <div style="font-size:10px;color:#7B74D6;margin-top:2px">親会社指定役員</div>
+          </div>
+          <div style="border:1px solid #3A386A;border-top:none;border-radius:0 0 10px 10px;padding:8px 10px;background:var(--surface)">
+            <div style="font-size:10px;color:var(--text3);line-height:1.65">各事業部への経営補佐として関与。補佐的権限（実線指示系統外）。</div>
+            <div style="margin-top:6px;padding-top:6px;border-top:1px dashed var(--border2);font-size:10px;color:var(--text3)">
+              <span style="display:inline-block;background:var(--navy2);color:#AFA9EC;border-radius:3px;padding:1px 6px;font-size:9px;font-weight:700;margin-right:4px">補佐的関与</span>破線で表示
+            </div>
+          </div>
+        </div>
+
+        <!-- 経営管理部 -->
+        <div style="flex:1;max-width:300px">
+          <div class="dept-head d-ga" onclick="showDetail('ga')" style="border-radius:10px 10px 0 0">
+            <div class="dept-nm" style="color:#712B13">経営管理部</div>
+            <div class="dept-sb">内部統制・JSOX統括　他事業部より上位</div>
+          </div>
+          <div class="mgr-block d-ga" style="border-radius:0 0 10px 10px">
+            <div class="mgr-row" onclick="showDetail('ga')"><span class="badge r-b">部長</span><div class="mgr-info"><span class="mgr-nm">伊藤 博之</span><span class="mgr-nt">経理・労務・IT統制</span></div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 第2→第3階層の接続線 -->
+      <div style="display:flex;justify-content:center"><div class="vline" style="height:20px"></div></div>
+      <div class="hline" style="max-width:1000px;margin:0 auto"></div>
+      <div style="display:flex;justify-content:space-around;max-width:1000px;margin:0 auto">
+        <div class="vline" style="height:20px"></div>
+        <div class="vline" style="height:20px"></div>
+        <div class="vline" style="height:20px"></div>
+        <div class="vline" style="height:20px"></div>
+        <div class="vline" style="height:20px"></div>
+      </div>
+
+      <!-- 第3階層：各事業部 -->
+      <div style="display:flex;justify-content:center;gap:8px;max-width:1000px;margin:0 auto;align-items:flex-start">
+        <div class="dept-col d-ams">
+          <div class="dept-head" onclick="showDetail('ams')"><div class="dept-nm">AMS事業部</div><div class="dept-sb">営業・工事課・管理課</div></div>
+          <div class="mgr-block">
+            <div class="mgr-row" onclick="showDetail('ams')"><span class="badge r-b">部長</span><div class="mgr-info"><span class="mgr-nm">外﨑 幹也</span><span class="mgr-nt">取締役兼務</span></div></div>
+            <div class="sub-div"><div class="sub-lbl">工事課</div></div>
+            <div class="mgr-row" onclick="showDetail('ams-koji')"><span class="badge r-k">課長</span><div class="mgr-info"><span class="mgr-nm">梅川 貴久</span></div></div>
+            <div class="sub-div"><div class="sub-lbl">管理課</div></div>
+            <div class="mgr-row" onclick="showDetail('ams-kanri')"><span class="badge r-s">主任</span><div class="mgr-info"><span class="mgr-nm">間下</span></div></div>
+          </div>
+        </div>
+        <div class="dept-col d-cc">
+          <div class="dept-head" onclick="showDetail('cc')"><div class="dept-nm">コールセンター<br>事業部</div><div class="dept-sb">新設・旧AMSより独立</div></div>
+          <div class="mgr-block">
+            <div class="mgr-row" onclick="showDetail('cc')"><span class="badge r-b">部長</span><div class="mgr-info"><span class="mgr-nm">池田 祐介</span></div></div>
+            <div class="mgr-row" onclick="showDetail('cc')"><span class="badge r-j">次長</span><div class="mgr-info"><span class="mgr-nm">笠原 康平</span></div></div>
+          </div>
+        </div>
+        <div class="dept-col d-partner">
+          <div class="dept-head" onclick="showDetail('partner')"><div class="dept-nm">パートナー<br>事業部</div><div class="dept-sb">回線・商材開拓</div></div>
+          <div class="mgr-block">
+            <div class="mgr-row" onclick="showDetail('partner')"><span class="badge r-b">部長</span><div class="mgr-info"><span class="mgr-nm">横井 駿</span></div></div>
+            <div class="mgr-row" onclick="showDetail('partner')"><span class="badge r-s">主任</span><div class="mgr-info"><span class="mgr-nm">市 奈緒美</span></div></div>
+          </div>
+        </div>
+        <div class="dept-col d-houjin">
+          <div class="dept-head" onclick="showDetail('houjin')"><div class="dept-nm">法人営業部</div><div class="dept-sb">旧：店舗ソリューション</div></div>
+          <div class="mgr-block">
+            <div class="mgr-row" onclick="showDetail('houjin')"><span class="badge r-b">部長</span><div class="mgr-info"><span class="mgr-nm">永野 恭平</span></div></div>
+          </div>
+        </div>
+        <div class="dept-col d-ops">
+          <div class="dept-head" onclick="showDetail('ops')"><div class="dept-nm">業務管理部</div><div class="dept-sb">取次管理・KPI</div></div>
+          <div class="mgr-block">
+            <div class="mgr-row" onclick="showDetail('ops')"><span class="badge r-b">部長</span><div class="mgr-info"><span class="mgr-nm">黒川 健一郎</span></div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 凡例 -->
+      <div style="display:flex;gap:16px;flex-wrap:wrap;max-width:1000px;margin:14px auto 0;padding:10px 14px;background:var(--surface);border:1px solid var(--border);border-radius:8px;font-size:11px;color:var(--text3)">
+        <div style="display:flex;align-items:center;gap:6px"><div style="width:24px;height:2px;background:var(--border2)"></div>指示・命令系統（ライン）</div>
+        <div style="display:flex;align-items:center;gap:6px"><div style="width:24px;height:0;border-top:2px dashed var(--border2)"></div>補佐的関与（スタッフ機能）</div>
+        <div style="display:flex;align-items:center;gap:6px"><span style="background:var(--rust-l);color:var(--rust);border-radius:3px;padding:1px 6px;font-size:9px;font-weight:700">上位</span>他事業部より上位の位置づけ</div>
+      </div>
+
+      <div class="auth-box" style="max-width:1000px;margin:14px auto 0">
+        <h4>権限範囲・指示経路</h4>
+        <div class="auth-grid">
+          <div class="auth-item"><strong>代表取締役（須田 宗樹）</strong>全事業部への最終意思決定権。人事・経営方針・予算の最終承認者。</div>
+          <div class="auth-item"><strong>取締役・経営補佐（伊藤 美和）</strong>親会社指定役員として代表取締役と各事業部の間で経営補佐を担う。実線の指示系統外（補佐的関与）。</div>
+          <div class="auth-item"><strong>経営管理部（伊藤 博之）</strong>内部統制・JSOX統括として他事業部より上位に位置づけ。経理・労務・IT統制を管轄。</div>
+          <div class="auth-item"><strong>指示経路</strong>代表取締役 → （経営補佐・経営管理部） → 各事業部長 → 次長 → 課長 → 主任 → 一般社員</div>
+          <div class="auth-item"><strong>事業部間連携</strong>他事業部への依頼・調整は各事業部長経由。代表取締役が横断案件を調整。</div>
+        </div>
+      </div>
+      <div class="detail-panel" id="org-detail">
+        <div class="detail-hd"><span id="org-detail-title"></span><span class="detail-close" onclick="document.getElementById('org-detail').classList.remove('on')">✕ 閉じる</span></div>
+        <div class="detail-bd" id="org-detail-body"></div>
+      </div>
+    </div>
+
+    <!-- ② 職域定義書 -->
+    <div id="tab-shokiki" class="tab-content">
+      <div class="breadcrumb"><span onclick="switchTab('home',null)" style="cursor:pointer;color:var(--text3)">ホーム</span><span class="breadcrumb-sep">›</span><span class="breadcrumb-cur">② 職域定義書</span></div>
+      <div class="page-title">職域定義書</div>
+      <div class="page-desc">各部署の担当範囲・責任境界・他部署への指示ルールを定義します</div>
+      <div class="notice"><div class="notice-icon">⚠️</div><div>本定義書はたたき台です。経営管理部管理者・各部署管理者とのディスカッションを経て正式版として制定してください。</div></div>
+      <div class="anchor-nav" id="shokiki-anchor-nav"></div>
+      <div id="shokiki-list"></div>
+    </div>
+
+    <!-- ③ 役職定義書 -->
+    <div id="tab-yakushoku" class="tab-content">
+      <div class="breadcrumb"><span onclick="switchTab('home',null)" style="cursor:pointer;color:var(--text3)">ホーム</span><span class="breadcrumb-sep">›</span><span class="breadcrumb-cur">③ 役職定義書</span></div>
+      <div class="page-title">役職定義書</div>
+      <div class="page-desc">役職ごとの役割・責任・求められる行動基準を定義します。上段：役職サマリー　下段：評価カテゴリ別横断比較表</div>
+      <div class="notice"><div class="notice-icon">📌</div><div><strong>重要原則：</strong>管理者は部下・他部署に業務を依頼した場合においても、その成果物の内容・正確性について最終責任を負います。</div></div>
+
+      <div class="anchor-nav">
+        <button class="anchor-btn" onclick="scrollToAnchor('yk-summary')">役職サマリー</button>
+        <button class="anchor-btn" onclick="scrollToAnchor('yk-kadai')">課題・問題点</button>
+        <button class="anchor-btn" onclick="scrollToAnchor('yk-gyomu')">業務取り組み</button>
+        <button class="anchor-btn" onclick="scrollToAnchor('yk-taijin')">対人対応</button>
+        <button class="anchor-btn" onclick="scrollToAnchor('yk-team')">チームワーク</button>
+        <button class="anchor-btn" onclick="scrollToAnchor('yk-chishiki')">知識・技能</button>
+      </div>
+
+      <!-- 役職サマリーカード -->
+      <div class="sec-head" id="yk-summary"><div class="sec-dot" style="background:var(--purple)"></div>役職サマリー</div>
+      <div class="yaku-summary-grid" id="yaku-summary-grid"></div>
+
+      <!-- 評価カテゴリ別比較テーブル -->
+      <div class="sec-head" id="yk-kadai"><div class="sec-dot" style="background:var(--amber)"></div>① 課題・問題点</div>
+      <div class="yaku-matrix-wrap"><table class="yaku-matrix" id="ym-kadai"></table></div>
+
+      <div class="sec-head" id="yk-gyomu"><div class="sec-dot" style="background:var(--blue)"></div>② 業務取り組み</div>
+      <div class="yaku-matrix-wrap"><table class="yaku-matrix" id="ym-gyomu"></table></div>
+
+      <div class="sec-head" id="yk-taijin"><div class="sec-dot" style="background:var(--green)"></div>③ 対人対応</div>
+      <div class="yaku-matrix-wrap"><table class="yaku-matrix" id="ym-taijin"></table></div>
+
+      <div class="sec-head" id="yk-team"><div class="sec-dot" style="background:var(--olive)"></div>④ チームワーク</div>
+      <div class="yaku-matrix-wrap"><table class="yaku-matrix" id="ym-team"></table></div>
+
+      <div class="sec-head" id="yk-chishiki"><div class="sec-dot" style="background:var(--rust)"></div>⑤ 知識・技能</div>
+      <div class="yaku-matrix-wrap"><table class="yaku-matrix" id="ym-chishiki"></table></div>
+    </div>
+
+    <!-- ④ 業務連携フロー -->
+    <div id="tab-flow" class="tab-content">
+      <div class="breadcrumb"><span onclick="switchTab('home',null)" style="cursor:pointer;color:var(--text3)">ホーム</span><span class="breadcrumb-sep">›</span><span class="breadcrumb-cur">④ 業務連携フロー</span></div>
+      <div class="page-title">業務連携フロー</div>
+      <div class="page-desc">部署をまたぐ業務依頼・引継ぎは必ず各部署の管理者を経由して行うこと</div>
+      <div class="sec-head"><div class="sec-dot" style="background:var(--purple)"></div>指示系統の基本ルール</div>
+      <div class="flow-rule"><div class="flow-item"><span class="flow-num">①</span><span>他部署への業務依頼は、<strong>依頼元部署の管理者が依頼先部署の管理者へ</strong>行うこと</span></div></div>
+      <div class="flow-rule"><div class="flow-item"><span class="flow-num">②</span><span><strong>業務管理部一般社員への直接指示は禁止。</strong>必ず業務管理部管理者を経由すること</span></div></div>
+      <div class="flow-rule"><div class="flow-item"><span class="flow-num">③</span><span><strong>工事課への施工依頼はAMS事業部管理者を経由すること。</strong>他部署からの直接依頼は受け付けない</span></div></div>
+      <div class="flow-rule"><div class="flow-item"><span class="flow-num">④</span><span>社長・上位者への報告資料は<strong>管理者が内容を確認・署名したうえで提出すること</strong></span></div></div>
+      <div class="sec-head" style="margin-top:28px"><div class="sec-dot" style="background:var(--amber)"></div>業務フロー別　連携ルール詳細</div>
+      <div class="tbl-wrap">
+        <table>
+          <thead><tr><th>業務フロー</th><th>起点部署</th><th>連携内容・依頼方法</th><th>受け手部署・担当</th><th>完了確認</th><th>備考</th></tr></thead>
+          <tbody>
+            <tr><td class="td-dept">防犯カメラ獲得〜請求</td><td>AMS事業部</td><td>受注情報・顧客情報を所定フォームで業務管理部管理者へ連携<br><small>※顧客情報の正確性はAMS管理者が責任を持って確認すること</small></td><td>業務管理部管理者<br>→一般社員へ指示</td><td>業務管理部管理者が請求開始を確認・報告</td><td>月額請求・未収対応は業務管理部が主担当</td></tr>
+            <tr><td class="td-dept">インターネット回線投入業務</td><td>パートナー事業部<br>コールセンター事業部</td><td>管理者承認済みの所定フォームで業務管理部管理者へ依頼<br><small>※投入前に管理者が内容を確認すること</small></td><td>業務管理部管理者<br>→一般社員へ指示</td><td>業務管理部管理者が投入完了を依頼元へ報告</td><td>不備発生時は業務管理部管理者から依頼元管理者へ連絡</td></tr>
+            <tr><td class="td-dept">工事依頼</td><td>AMS事業部管理者</td><td>工事内容・日程・現場情報を工事課管理者へ連絡<br><small>他部署からの直接依頼は受け付けない</small></td><td>工事課管理者<br>→担当者へ指示</td><td>工事課管理者が完工報告をAMSへ</td><td>工事完了後の検収はAMS管理者が実施</td></tr>
+            <tr><td class="td-dept">KPI報告</td><td>各部署管理者</td><td>部下・業務管理部に依頼した資料は管理者が内容を確認・検証してから社長へ提出<br><small>未確認のまま提出することは禁止</small></td><td>社長</td><td>社長が報告内容を確認・承認</td><td>報告資料には作成者・確認者（管理者）・提出日を明記すること</td></tr>
+            <tr><td class="td-dept">未収対応</td><td>業務管理部</td><td>未収発生を確認後、業務管理部管理者から該当案件の獲得部署管理者へ報告・連携依頼</td><td>AMS・パートナー・<br>コールセンター各管理者</td><td>解決後に業務管理部管理者へ報告</td><td>未収一覧は月次で社長へ業務管理部管理者が報告</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ⑤ 職務権限マトリクス -->
+    <div id="tab-matrix" class="tab-content">
+      <div class="breadcrumb"><span onclick="switchTab('home',null)" style="cursor:pointer;color:var(--text3)">ホーム</span><span class="breadcrumb-sep">›</span><span class="breadcrumb-cur">⑤ 職務権限マトリクス</span></div>
+      <div class="page-title">職務権限マトリクス</div>
+      <div class="page-desc">◎ 決裁（最終承認）　○ 承認・確認（実行前に承認が必要）　△ 補助（補助的関与）　― 権限なし</div>
+      <div class="legend">
+        <div class="legend-item"><span class="mx-cell mx-kk" style="padding:3px 10px;border-radius:4px">◎</span>決裁（最終承認）</div>
+        <div class="legend-item"><span class="mx-cell mx-ok" style="padding:3px 10px;border-radius:4px">○</span>承認・確認</div>
+        <div class="legend-item"><span class="mx-cell mx-hj" style="padding:3px 10px;border-radius:4px">△</span>補助的関与</div>
+        <div class="legend-item"><span class="mx-cell mx-no" style="padding:3px 10px;border-radius:4px;border:1px solid var(--border)">―</span>権限なし</div>
+      </div>
+      <div class="anchor-nav" id="matrix-anchor-nav"></div>
+      <div class="tbl-wrap">
+        <table>
+          <thead><tr><th>カテゴリ</th><th>業務項目</th><th><span class="lv lv1">社長</span></th><th><span class="lv lv2">部長</span></th><th><span class="lv lv3">次長</span></th><th><span class="lv lv4">課長</span></th><th><span class="lv lv5">係長</span></th><th><span class="lv lv6">主任</span></th><th><span class="lv lv7">一般</span></th></tr></thead>
+          <tbody id="matrix-body"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ⑥ 報告・証跡管理 -->
+    <div id="tab-shouko" class="tab-content">
+      <div class="breadcrumb"><span onclick="switchTab('home',null)" style="cursor:pointer;color:var(--text3)">ホーム</span><span class="breadcrumb-sep">›</span><span class="breadcrumb-cur">⑥ 報告・証跡管理</span></div>
+      <div class="page-title">報告・証跡管理ルール</div>
+      <div class="page-desc">親会社（上場企業）のJSOX要件に対応するため、報告・承認の証跡を適切に管理します</div>
+      <div class="notice"><div class="notice-icon">⚠️</div><div>本ルールはJSOX（内部統制報告制度）の要件を踏まえたたたき台です。経営管理部・親会社の指示を踏まえて正式版として制定してください。</div></div>
+      <div class="sec-head"><div class="sec-dot" style="background:var(--navy)"></div>基本原則</div>
+      <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:24px">
+        <div class="flow-rule"><span class="tag tag-jsox">JSOX</span>報告資料・提出書類には必ず「<strong>作成者</strong>」「<strong>確認者（管理者）</strong>」「<strong>提出日</strong>」を明記すること</div>
+        <div class="flow-rule"><span class="tag tag-important">重要</span>管理者は部下が作成した資料を内容確認・検証したうえで承認すること。<strong>未確認のまま上位者へ提出することは禁止</strong></div>
+        <div class="flow-rule">数字・データに誤りがあった場合、その責任は<strong>確認・承認した管理者が負うこと</strong></div>
+        <div class="flow-rule"><span class="tag tag-jsox">JSOX</span>承認証跡（サイン・押印・電子承認等）を必ず残すこと</div>
+        <div class="flow-rule">業務管理部は月次で売上・手数料・未収の集計結果を<strong>管理者確認のうえ社長へ報告</strong>すること</div>
+      </div>
+      <div class="sec-head"><div class="sec-dot" style="background:var(--amber)"></div>書類・報告別　証跡管理一覧</div>
+      <div class="tbl-wrap">
+        <table>
+          <thead><tr><th>書類・報告種別</th><th>作成者</th><th>確認者（必須）</th><th>承認者</th><th>保管方法・期間</th><th>備考</th></tr></thead>
+          <tbody>
+            <tr><td class="td-dept">KPI報告書</td><td>各部署担当者<br><small>（管理者が依頼）</small></td><td><strong>各部署管理者</strong><br><small>※内容を必ず検証すること</small></td><td>社長</td><td>電子または紙で<strong>3年以上</strong>保管</td><td><span class="tag tag-important">禁止</span>管理者の確認なしに社長へ提出することは禁止</td></tr>
+            <tr><td class="td-dept">売上・手数料計算書</td><td>業務管理部 一般社員</td><td><strong>業務管理部管理者</strong></td><td>部長</td><td>電子で<strong>5年以上</strong>保管</td><td>月次で社長へ報告。計算根拠も合わせて保管</td></tr>
+            <tr><td class="td-dept">未収一覧表</td><td>業務管理部 一般社員</td><td><strong>業務管理部管理者</strong></td><td>部長・社長</td><td>電子で<strong>5年以上</strong>保管</td><td>月次報告。獲得部署管理者へも共有</td></tr>
+            <tr><td class="td-dept">契約書・見積書</td><td>各部署担当者</td><td><strong>各部署管理者</strong></td><td>部長または社長<br><small>（金額に応じて）</small></td><td>原本または電子で<strong>7年以上</strong>保管</td><td>権限マトリクスの承認基準に従うこと</td></tr>
+            <tr><td class="td-dept">経費精算書</td><td>申請者（一般社員等）</td><td><strong>直属の管理者</strong></td><td>部長</td><td>電子または紙で<strong>7年以上</strong>保管</td><td>領収書等の証憑を必ず添付</td></tr>
+            <tr><td class="td-dept">工事完工報告書</td><td>工事課担当者</td><td><strong>工事課管理者</strong></td><td>AMS事業部管理者</td><td>電子で<strong>5年以上</strong>保管</td><td>施工写真等の証跡も合わせて保管</td></tr>
+            <tr><td class="td-dept">投入・検収記録</td><td>業務管理部 一般社員</td><td><strong>業務管理部管理者</strong></td><td>部長</td><td>電子で<strong>5年以上</strong>保管</td><td>キャリアからの確認データも保管</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ⑦ 申請・マニュアル -->
+    <div id="tab-shinsei" class="tab-content">
+      <div class="breadcrumb"><span onclick="switchTab('home',null)" style="cursor:pointer;color:var(--text3)">ホーム</span><span class="breadcrumb-sep">›</span><span class="breadcrumb-cur">⑦ 申請・マニュアル</span></div>
+      <div class="page-title">申請・マニュアル</div>
+      <div class="page-desc">各種申請フォーム・就業規則・管理業務マニュアル・内部統制ルールをまとめています。リンク切れ・追加依頼は経営管理部（伊藤部長）まで。</div>
+      <div class="notice"><div class="notice-icon">📌</div><div>URLやファイルリンクは<strong>経営管理部</strong>が一元管理します。外部リンク（Google Drive等）とポータル内説明を併用しています。</div></div>
+
+      <!-- anchor nav -->
+      <div class="anchor-nav">
+        <button class="anchor-btn" onclick="scrollToAnchor('sh-kisoku')">📜 就業規則・社内規程</button>
+        <button class="anchor-btn" onclick="scrollToAnchor('sh-naibu')">🏗️ 内部統制・JSOX</button>
+        <button class="anchor-btn" onclick="scrollToAnchor('sh-gyomu-manual')">⚙️ 管理業務マニュアル</button>
+        <button class="anchor-btn" onclick="scrollToAnchor('sh-keihi')">💴 経費・支払申請</button>
+        <button class="anchor-btn" onclick="scrollToAnchor('sh-kyuka')">📅 休暇・勤怠申請</button>
+        <button class="anchor-btn" onclick="scrollToAnchor('sh-gyomu')">📋 業務申請・依頼</button>
+      </div>
+
+      <!-- 就業規則・社内規程 -->
+      <div class="sec-head" id="sh-kisoku"><div class="sec-dot" style="background:var(--navy)"></div>📜 就業規則・社内規程</div>
+      <div class="shinsei-grid" id="grid-kisoku"></div>
+
+      <!-- 内部統制・JSOX -->
+      <div class="sec-head" id="sh-naibu"><div class="sec-dot" style="background:var(--rust)"></div>🏗️ 内部統制・JSOXルール</div>
+      <div class="shinsei-grid" id="grid-naibu"></div>
+
+      <!-- 管理業務マニュアル -->
+      <div class="sec-head" id="sh-gyomu-manual"><div class="sec-dot" style="background:var(--purple)"></div>⚙️ 管理業務マニュアル</div>
+      <div class="shinsei-grid" id="grid-gyomu-manual"></div>
+
+      <!-- 経費・支払申請 -->
+      <div class="sec-head" id="sh-keihi"><div class="sec-dot" style="background:var(--amber)"></div>💴 経費・支払申請</div>
+      <div class="shinsei-grid" id="grid-keihi"></div>
+
+      <!-- 休暇・勤怠申請 -->
+      <div class="sec-head" id="sh-kyuka"><div class="sec-dot" style="background:var(--green)"></div>📅 休暇・勤怠申請</div>
+      <div class="shinsei-grid" id="grid-kyuka"></div>
+
+      <!-- 業務申請・依頼フォーム -->
+      <div class="sec-head" id="sh-gyomu"><div class="sec-dot" style="background:var(--blue)"></div>📋 業務申請・依頼フォーム</div>
+      <div class="shinsei-grid" id="grid-gyomu"></div>
+    </div>
+
+    <!-- ⑧ 価格・手数料設定ルール -->
+    <div id="tab-eigyo" class="tab-content">
+      <div class="breadcrumb"><span onclick="switchTab('home',null)" style="cursor:pointer;color:var(--text3)">ホーム</span><span class="breadcrumb-sep">›</span><span class="breadcrumb-cur">⑧ 価格・手数料設定ルール</span></div>
+      <div class="page-title">価格設定・手数料設定ルール</div>
+      <div class="page-desc">顧客への提供価格設定と代理店・紹介店への支払手数料設定に関する管理者判断基準を定めます。基準内は管理者決裁OK、基準外は社長決裁が必要です。</div>
+      <div class="notice"><div class="notice-icon">⚠️</div><div>本ルールはたたき台です。リスクモンスターの年間取引額基準は別途追記予定。経営管理部・社長との合意後に正式版として制定してください。</div></div>
+
+      <div class="anchor-nav">
+        <button class="anchor-btn" onclick="scrollToAnchor('eg-common')">⚖️ 共通判断基準</button>
+        <button class="anchor-btn" onclick="scrollToAnchor('eg-price')">🏷️ 提供価格設定</button>
+        <button class="anchor-btn" onclick="scrollToAnchor('eg-tesuryo')">💰 支払手数料設定</button>
+        <button class="anchor-btn" onclick="scrollToAnchor('eg-modoshi')">🔄 戻入・80%ルール</button>
+        <button class="anchor-btn" onclick="scrollToAnchor('eg-timing')">⏱️ 支払タイミング</button>
+        <button class="anchor-btn" onclick="scrollToAnchor('eg-escalate')">🚨 社長決裁が必要なケース</button>
+      </div>
+
+      <!-- ══════════════════════════════════════
+           共通判断基準
+      ══════════════════════════════════════ -->
+      <div class="sec-head" id="eg-common"><div class="sec-dot" style="background:var(--navy)"></div>⚖️ 共通判断基準（提供価格・支払手数料 両方に適用）</div>
+
+      <!-- 共通①PL -->
+      <div class="eg-rule-card" style="border-left-color:var(--blue);margin-bottom:10px">
+        <div class="eg-rule-title">📊 共通① PL・予実達成の観点</div>
+        <div class="eg-rule-body">
+          <div class="eg-rule-item"><span class="eg-rule-label">基本</span>当月・当四半期の予算達成状況を前提に判断すること。管理者は常に部門のPL状況を把握したうえで意思決定する。</div>
+          <div class="eg-rule-item"><span class="eg-rule-label eg-label-warn">未達局面</span>値引き・手数料上乗せの基準を厳格化。例外承認のハードルを上げる。</div>
+          <div class="eg-rule-item"><span class="eg-rule-label eg-label-ok">達成・超過局面</span>管理者裁量幅を広げ、戦略的な投資判断を認める。</div>
+        </div>
+      </div>
+
+      <!-- 共通②リスクモンスター -->
+      <div class="eg-rule-card" style="border-left-color:var(--rust);margin-bottom:10px">
+        <div class="eg-rule-title">🔍 共通② リスクモンスター判定（条件付き必須）</div>
+        <div class="eg-rule-body">
+          <div class="eg-rule-item"><span class="eg-rule-label eg-label-ok">任意（推奨）</span>ネット無料・防犯カメラ等の一般サービス提供は必須ではないが、取引額に応じた<strong>回収リスクの考慮・判断は常に行うこと</strong></div>
+          <div class="eg-rule-item"><span class="eg-rule-label eg-label-ng">必須</span>複数棟契約・管理会社での回収代行・卸など<strong>取引金額が大きくなるケース</strong>はリスクモンスター判定を必ず取得すること</div>
+        </div>
+        <div style="display:flex;gap:8px;margin-top:10px">
+          <div class="eg-risk-card eg-risk-safe" style="flex:1;padding:10px 13px">
+            <div class="eg-risk-badge">A〜D 判定</div>
+            <div class="eg-risk-label" style="font-size:12px">安全圏</div>
+            <div class="eg-risk-desc" style="font-size:11px">標準の採算基準を適用。管理者の判断で進めてよい。</div>
+          </div>
+          <div class="eg-risk-card eg-risk-danger" style="flex:1;padding:10px 13px">
+            <div class="eg-risk-badge">E・F 判定</div>
+            <div class="eg-risk-label" style="font-size:12px">要注意・高リスク</div>
+            <div class="eg-risk-rule-box">
+              <div class="eg-risk-rule-item">手数料の<strong>10%以上</strong>を当社利益として確保必須</div>
+              <div class="eg-risk-rule-item">10%を下回る場合 → <strong>社長決裁必須</strong></div>
+            </div>
+            <div class="eg-risk-alt">
+              <div class="eg-risk-alt-title">📌 代替策</div>
+              <div class="eg-risk-alt-desc">保証金回収も可。ただし<strong>経営管理部・親会社への相談・承認が必須</strong>。</div>
+            </div>
+          </div>
+        </div>
+        <div class="eg-rule-note" style="margin-top:8px">リスクモンスターの年間取引額ごとの詳細基準は別途追記予定。経営管理部（伊藤部長）へ確認のこと。</div>
+      </div>
+
+      <!-- 共通③戦略性・経済合理性 -->
+      <div class="eg-rule-card" style="border-left-color:var(--purple);margin-bottom:10px">
+        <div class="eg-rule-title">🎯 共通③ 戦略性・経済合理性の判断（LOMグループ基準）</div>
+        <div class="eg-rule-body">
+          <div style="background:var(--navy);border-radius:8px;padding:12px 16px;margin-bottom:10px">
+            <div style="font-size:10px;font-weight:700;color:#AFA9EC;margin-bottom:6px;letter-spacing:.06em">LOMグループ（ラストワンマイル）が掲げる経済合理性の基準</div>
+            <div style="font-size:13px;font-weight:700;color:#EEEDFE;margin-bottom:8px">「長期の営業利益が出るのはどちらか？」</div>
+            <div style="font-size:11px;color:#C8C6EC;line-height:1.75">
+              上場企業グループとして、感情・慣習・短期売上ではなく、<strong style="color:#EEEDFE">数字で説明できる根拠</strong>に基づいた判断を行うこと。株主・親会社・監査に対して判断根拠を説明できる状態を常に維持する。
+            </div>
+          </div>
+          <div class="eg-rule-item"><span class="eg-rule-label">優先基準</span>短期の売上・手数料より<strong>長期の営業利益</strong>を優先して判断すること</div>
+          <div class="eg-rule-item"><span class="eg-rule-label">確認事項</span>値引き・手数料上乗せが長期PLに与える影響を必ず考慮すること</div>
+          <div class="eg-rule-item"><span class="eg-rule-label eg-label-ok">新規開拓</span>短期の採算が厳しくても長期利益に寄与すると判断できる場合は戦略投資として認める</div>
+          <div class="eg-rule-item"><span class="eg-rule-label eg-label-ok">既存深耕</span>関係継続が長期利益に貢献するかを判断軸に置く</div>
+        </div>
+      </div>
+
+      <!-- 共通④利益相反 -->
+      <div class="eg-rule-card" style="border-left-color:var(--amber);margin-bottom:10px">
+        <div class="eg-rule-title">⚠️ 共通④ 利益相反の防止（価格設定・手数料設定 両方に適用）</div>
+        <div class="eg-rule-body">
+          <div class="eg-rule-item"><span class="eg-rule-label eg-label-ng">申告義務</span>管理者が個人的な関係・利益のある相手との価格交渉・手数料設定を行う場合は、<strong>事前に社長へ申告する義務</strong>を負う</div>
+          <div class="eg-rule-item"><span class="eg-rule-label eg-label-warn">準用</span>「有利な条件を意図的に特定先に提供する」「市場相場から著しく乖離した条件設定」も利益相反に準じて扱う</div>
+          <div class="eg-rule-item"><span class="eg-rule-label eg-label-warn">確認</span>申告なしに利益相反が生じる取引を進めることは<strong>コンプライアンス規程違反</strong>とみなす</div>
+          <div class="eg-rule-item"><span class="eg-rule-label">参照</span>詳細は⑦申請・マニュアル内「コンプライアンス規程」を参照すること</div>
+        </div>
+      </div>
+
+      <!-- ══════════════════════════════════════
+           提供価格設定
+      ══════════════════════════════════════ -->
+      <div class="sec-head" id="eg-price"><div class="sec-dot" style="background:var(--blue)"></div>🏷️ 提供価格設定（顧客への販売価格）</div>
+
+      <div class="eg-rule-grid">
+        <div class="eg-rule-card" style="border-left-color:var(--blue)">
+          <div class="eg-rule-title">🏠 月額回収サービスの採算基準</div>
+          <div class="eg-rule-body">
+            <div class="eg-formula">
+              <div class="eg-formula-row"><span class="eg-formula-label">月額売上</span></div>
+              <div class="eg-formula-row"><span class="eg-formula-op">−</span><span class="eg-formula-label">作業費（施工・設置・設定等）</span></div>
+              <div class="eg-formula-row"><span class="eg-formula-op">−</span><span class="eg-formula-label">実質回収費用（クレジット手数料・口座引落手数料等）</span></div>
+              <div class="eg-formula-row"><span class="eg-formula-op">−</span><span class="eg-formula-label">その他諸経費</span></div>
+              <div class="eg-formula-divider"></div>
+              <div class="eg-formula-row eg-formula-result"><span class="eg-formula-op">=</span><span class="eg-formula-label"><strong>実質粗利 ＞ 0　かつ　最低粗利率クリア</strong></span></div>
+            </div>
+            <div class="eg-rule-note">月額回収サービスは初期条件が長期PL全体に影響するため、<strong>回収期間（初期費用の回収に何ヶ月かかるか）</strong>も必ず確認すること</div>
+          </div>
+        </div>
+        <div class="eg-rule-card" style="border-left-color:var(--green)">
+          <div class="eg-rule-title">✅ 値引き・条件設定のルール</div>
+          <div class="eg-rule-body">
+            <div class="eg-rule-item"><span class="eg-rule-label eg-label-ok">管理者OK</span>採算基準・粗利率を満たす範囲での値引き・条件設定</div>
+            <div class="eg-rule-item"><span class="eg-rule-label eg-label-warn">必須</span>契約・条件確定・値引きは必ず<strong>管理者承認を経てから</strong>確定すること</div>
+            <div class="eg-rule-item"><span class="eg-rule-label eg-label-ng">社長決裁</span>採算基準を下回る条件設定・長期PLへの重大な影響が見込まれる案件</div>
+            <div class="eg-rule-item"><span class="eg-rule-label">営業現場</span>顧客対応・商談における現場判断は認める。ただし条件確定は管理者承認後</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ══════════════════════════════════════
+           支払手数料設定
+      ══════════════════════════════════════ -->
+      <div class="sec-head" id="eg-tesuryo"><div class="sec-dot" style="background:var(--amber)"></div>💰 支払手数料設定（代理店・紹介店への支払）</div>
+
+      <div class="eg-rule-grid" style="margin-bottom:10px">
+        <div class="eg-rule-card" style="border-left-color:var(--amber)">
+          <div class="eg-rule-title">📐 6ヶ月ルール（基本原則）</div>
+          <div class="eg-rule-body">
+            <div class="eg-formula">
+              <div class="eg-formula-row"><span class="eg-formula-label">想定月次ストック粗利 = 月額売上 − 実質回収費用 − 諸経費</span></div>
+              <div class="eg-formula-divider"></div>
+              <div class="eg-formula-row eg-formula-result"><span class="eg-formula-op">=</span><span class="eg-formula-label"><strong>上限手数料 = 想定月次ストック粗利 × 6ヶ月</strong></span></div>
+            </div>
+            <div style="display:flex;gap:8px;margin-top:10px">
+              <div class="eg-judge-ok">支払手数料 ≦ 上限<br>→ <strong>管理者OK</strong></div>
+              <div class="eg-judge-ng">支払手数料 ＞ 上限<br>→ <strong>社長決裁</strong></div>
+            </div>
+            <div class="eg-rule-note" style="margin-top:8px">金額の大小ではなく6ヶ月ルールが絶対基準。少額でも上限超過の場合は社長決裁が必要。</div>
+          </div>
+        </div>
+        <div class="eg-rule-card" style="border-left-color:var(--rust)">
+          <div class="eg-rule-title">⚖️ 2段階　管理者への要求事項と責任</div>
+          <div class="eg-rule-body">
+            <div style="background:rgba(15,26,48,.06);border-radius:6px;padding:10px 12px;margin-bottom:8px;font-size:11px;color:var(--text2);line-height:1.75">
+              <div style="font-size:10px;font-weight:700;color:var(--text3);margin-bottom:4px">【判断基準の逸脱】</div>
+              管理職としての適性を改めて確認させていただき、場合によっては<strong>職務権限の見直し・役割変更を検討することがある。</strong>
+            </div>
+            <div style="background:rgba(153,60,29,.08);border:1px solid rgba(153,60,29,.2);border-radius:6px;padding:10px 12px;font-size:11px;color:var(--text2);line-height:1.75">
+              <div style="font-size:10px;font-weight:700;color:var(--rust);margin-bottom:4px">【規定・コンプライアンス違反】</div>
+              人事上の処分にとどまらず、<strong>法的措置を含む厳正な対応を行う場合がある。</strong>管理者はこの権限が会社から委託された重大な責任であることを認識し、誠実かつ透明性をもって行動すること。
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 戻入・80%ルール -->
+      <div class="sec-head" id="eg-modoshi"><div class="sec-dot" style="background:var(--green)"></div>🔄 戻入条件・80%ルール</div>
+      <div class="eg-rule-grid">
+        <div class="eg-rule-card" style="border-left-color:var(--green)">
+          <div class="eg-rule-title">🔄 戻入条件の付帯ルール</div>
+          <div class="eg-rule-body">
+            <div class="eg-rule-item"><span class="eg-rule-label">原則</span>上位店から戻入設定がある場合、代理店にも<strong>同条件の戻入を必須付帯</strong></div>
+            <div class="eg-rule-item"><span class="eg-rule-label eg-label-ok">例外</span>アライアンス（不動産等の紹介販路）は戻入条件の付帯を任意とする</div>
+          </div>
+        </div>
+        <div class="eg-rule-card" style="border-left-color:var(--blue)">
+          <div class="eg-rule-title">📏 80%ルール（代理店 vs アライアンスの判定）</div>
+          <div class="eg-rule-body">
+            <div class="eg-rule-item"><span class="eg-rule-label eg-label-warn">代理店とみなす</span>当社入金手数料に対する支払手数料が<strong>80%超</strong>の場合</div>
+            <div class="eg-rule-item"><span class="eg-rule-label eg-label-ok">アライアンス扱い</span>当社入金手数料に対する支払手数料が<strong>80%以下</strong>の場合</div>
+            <div class="eg-rule-note">代理店とみなした場合、戻入条件がある案件は紹介店・アライアンスであっても<strong>戻入条件の付帯が必須</strong></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 支払タイミング -->
+      <div class="sec-head" id="eg-timing"><div class="sec-dot" style="background:var(--navy)"></div>⏱️ 手数料支払タイミングルール</div>
+      <div class="eg-rule-grid">
+        <div class="eg-rule-card" style="border-left-color:var(--green)">
+          <div class="eg-rule-title">✅ 支払OK（管理者判断）</div>
+          <div class="eg-rule-body">
+            <div class="eg-rule-item"><span class="eg-rule-label eg-label-ok">条件①</span>紹介・取次された<strong>該当顧客分の手数料入金が確認</strong>された後</div>
+            <div class="eg-rule-item"><span class="eg-rule-label eg-label-ok">条件②</span>自社サービス（月額請求）の<strong>初回請求分の入金が確認</strong>された後</div>
+          </div>
+        </div>
+        <div class="eg-rule-card" style="border-left-color:var(--rust)">
+          <div class="eg-rule-title">⚠️ 社長決裁が必要なケース</div>
+          <div class="eg-rule-body">
+            <div class="eg-rule-item"><span class="eg-rule-label eg-label-ng">禁止</span>上記①②の<strong>入金確認前に支払いを行う場合</strong>は社長決裁必須</div>
+            <div class="eg-rule-item"><span class="eg-rule-label">申請要件</span>理由・金額・回収見込みを明示したうえで社長へ申請すること</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 社長決裁が必要なケース一覧 -->
+      <div class="sec-head" id="eg-escalate"><div class="sec-dot" style="background:var(--rust)"></div>🚨 社長決裁が必要なケース（総括）</div>
+      <div class="tbl-wrap">
+        <table>
+          <thead><tr><th>区分</th><th>ケース</th><th>申請要件</th></tr></thead>
+          <tbody>
+            <tr><td class="td-dept">提供価格</td><td>採算基準（実質粗利）を下回る条件設定</td><td>採算根拠・長期PL見込みを明示</td></tr>
+            <tr><td class="td-dept">支払手数料</td><td>ストック粗利6ヶ月を超える手数料支払い</td><td>投資回収計画・根拠を明示</td></tr>
+            <tr><td class="td-dept">支払手数料</td><td>E・F判定先への10%未満利益での取引</td><td>リスク対応策・担保内容を明示</td></tr>
+            <tr><td class="td-dept">支払タイミング</td><td>入金確認前の手数料前払い</td><td>理由・金額・回収見込みを明示</td></tr>
+            <tr><td class="td-dept">共通</td><td>利益相反が疑われる取引・条件設定</td><td>関係性・条件の合理性を申告</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ⑨ 仕入れ・上位店取引ルール -->
+    <div id="tab-shiiire" class="tab-content">
+      <div class="breadcrumb"><span onclick="switchTab('home',null)" style="cursor:pointer;color:var(--text3)">ホーム</span><span class="breadcrumb-sep">›</span><span class="breadcrumb-cur">⑨ 仕入れ・上位店取引ルール</span></div>
+      <div class="page-title">仕入れ・上位店取引ルール</div>
+      <div class="page-desc">SHCが上位店・仕入れ先から受領する手数料の決裁・合意・記録・共有に関するルールを定めます。</div>
+      <div class="notice"><div class="notice-icon">⚠️</div><div>本ルールを基本とし、LARKワークフロー・LARK BASEを活用した社内申請・記録の整備を図ります。経営管理部（伊藤部長）が整備を統括します。</div></div>
+
+      <div class="anchor-nav">
+        <button class="anchor-btn" onclick="scrollToAnchor('si-kengen')">🏢 商材別決裁者</button>
+        <button class="anchor-btn" onclick="scrollToAnchor('si-flow')">🔀 新規取引承認フロー</button>
+        <button class="anchor-btn" onclick="scrollToAnchor('si-henko')">📋 条件合意・変更ルール</button>
+        <button class="anchor-btn" onclick="scrollToAnchor('si-kisoku')">📁 記録・証跡管理</button>
+        <button class="anchor-btn" onclick="scrollToAnchor('si-fuuin')">🔒 封緘・情報共有ルール</button>
+      </div>
+
+      <!-- 商材別決裁者 -->
+      <div class="sec-head" id="si-kengen"><div class="sec-dot" style="background:var(--navy)"></div>🏢 商材別　受領手数料の決裁者・窓口</div>
+      <div class="tbl-wrap" style="margin-bottom:14px">
+        <table>
+          <thead><tr><th>商材カテゴリ</th><th>仕入れ価格・経済条件の決裁者</th><th>業務フロー打ち合わせ</th></tr></thead>
+          <tbody>
+            <tr>
+              <td class="td-dept">インターネット回線・新電力</td>
+              <td>パートナー事業部 管理者<br><small>またはコンタクトセンター管理者</small></td>
+              <td rowspan="4" style="vertical-align:middle;font-size:11px;color:var(--text2)">
+                業務管理部・部長職以下・一般社員でも対応可。<br>ただし打ち合わせ後は<strong>必ず該当商材の決裁管理者へ報告</strong>すること。<br><br>報告手段：LARK等で<strong>証跡が残る方法を推奨</strong>（任意）
+              </td>
+            </tr>
+            <tr>
+              <td class="td-dept">法人系商材の手数料</td>
+              <td>法人営業部 管理者</td>
+            </tr>
+            <tr>
+              <td class="td-dept">MISP・防犯カメラ・その他AMS関連</td>
+              <td>AMS事業部 管理者</td>
+            </tr>
+            <tr>
+              <td class="td-dept">商材別窓口一覧・単価決裁者</td>
+              <td colspan="1" style="color:var(--text3);font-size:11px">別途社内データにて管理予定<br>（リンク・保管場所は経営管理部が追記）</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- 新規取引承認フロー -->
+      <div class="sec-head" id="si-flow"><div class="sec-dot" style="background:var(--purple)"></div>🔀 New商材・上位店追加時の承認フロー</div>
+      <div class="eg-rule-grid" style="margin-bottom:14px">
+        <div class="eg-rule-card" style="border-left-color:var(--green)">
+          <div class="eg-rule-title">✅ 新規取引先（既存ルールを踏襲）</div>
+          <div class="eg-rule-body">
+            <div class="eg-rule-item"><span class="eg-rule-label">Step 1</span>与信チェック（リスクモンスター）を取得</div>
+            <div class="eg-rule-item"><span class="eg-rule-label">Step 2</span>取引先申請（<strong>LARKワークフロー</strong>）を起案</div>
+            <div class="eg-rule-item"><span class="eg-rule-label">Step 3</span>経営管理部・社長決裁</div>
+            <div class="eg-rule-item"><span class="eg-rule-label">Step 4</span>LARK BASEに取引開始記録を登録・関連管理者へ自動通知</div>
+          </div>
+        </div>
+        <div class="eg-rule-card" style="border-left-color:var(--amber)">
+          <div class="eg-rule-title">⚠️ 既存取引先の追加商材（今回新設ルール）</div>
+          <div class="eg-rule-body">
+            <div class="eg-rule-item"><span class="eg-rule-label eg-label-ok">軽微な追加</span>同系統商材・条件変化なし → <strong>管理者承認のみ</strong>・LARK BASEに記録</div>
+            <div class="eg-rule-item"><span class="eg-rule-label eg-label-warn">新商材・条件変更あり</span>管理者起案 → <strong>経営管理部・社長決裁</strong> → LARK BASE記録・自動通知</div>
+            <div class="eg-rule-note">現状はワークフローが存在しないため、本ルールを基本として社内申請の整備を図ること</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 商材リスク判定フロー -->
+      <div class="card" style="margin-bottom:14px">
+        <div class="card-title"><div class="dot" style="background:var(--rust)"></div>新商材取り扱い時のリスク判定フロー</div>
+        <div class="tbl-wrap">
+          <table>
+            <thead><tr><th>Step</th><th>確認内容</th><th>判定</th><th>対応</th></tr></thead>
+            <tbody>
+              <tr><td class="td-dept">Step 1</td><td>SHCが料金回収の役務を負うか？<br><small>（月額請求・回収代行・卸として介在する取引）</small></td><td><span class="lv lv4">Yes</span></td><td>取引規模に応じてリスクモンスター必須<br>大規模の場合はラストワンマイル報告</td></tr>
+              <tr><td class="td-dept">Step 2</td><td>法令リスクへの抵触可能性があるか？<br><small>保険業法・特商法・電気通信事業法・割賦販売法・景品表示法・個人情報保護法等</small></td><td><span class="lv lv4">Yes</span></td><td>ラストワンマイル<strong>法務チェック必須</strong><br>役員会決裁</td></tr>
+              <tr><td class="td-dept">Step 3</td><td>商材リスク総合判定</td><td><span class="lv lv6">低リスク</span></td><td>経営管理部・社長決裁・LARK BASE記録</td></tr>
+              <tr><td></td><td></td><td><span class="lv lv4">中リスク</span></td><td>経営管理部・社長決裁＋ラストワンマイル報告</td></tr>
+              <tr><td></td><td></td><td><span class="lv lv2">高リスク</span></td><td>ラストワンマイル法務チェック・役員会決裁</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- 条件合意・変更ルール -->
+      <div class="sec-head" id="si-henko"><div class="sec-dot" style="background:var(--blue)"></div>📋 経済条件の合意・変更ルール</div>
+      <div class="eg-rule-grid" style="margin-bottom:14px">
+        <div class="eg-rule-card" style="border-left-color:var(--blue)">
+          <div class="eg-rule-title">📬 一方的な通知書による条件変更</div>
+          <div class="eg-rule-body">
+            <div class="eg-rule-item"><span class="eg-rule-label">受取ルール</span>受け取った担当者・管理者は<strong>受領当日中にLARK BASEへ登録</strong>し、関連管理者・業務管理部へ自動通知</div>
+            <div class="eg-rule-item"><span class="eg-rule-label eg-label-warn">マイナス案件</span>SHCにマイナスとなる条件変更の場合は<strong>即時管理者へ報告</strong>し、交渉要否を判断すること</div>
+            <div class="eg-rule-item"><span class="eg-rule-label">異議申し立て</span>条件変更に異議がある場合は受領後速やかに管理者判断のうえ書面で異議を通知すること<br><small>（期間内に何もしないと受諾とみなされるリスクあり）</small></div>
+          </div>
+        </div>
+        <div class="eg-rule-card" style="border-left-color:var(--green)">
+          <div class="eg-rule-title">🤝 商談・交渉を経た合意</div>
+          <div class="eg-rule-body">
+            <div class="eg-rule-item"><span class="eg-rule-label">合意確定時</span>合意書・覚書は必ず受領・保管し、<strong>受領当日中にLARK BASEへ登録</strong></div>
+            <div class="eg-rule-item"><span class="eg-rule-label">共有義務</span>自動通知で関連管理者・業務管理部へ即時共有。業務管理部は通知受領後<strong>速やかに請求・精算条件を更新</strong>すること</div>
+            <div class="eg-rule-item"><span class="eg-rule-label eg-label-ng">口頭禁止</span>口頭のみでの条件変更合意は原則禁止。必ずメール・文書等で確認・記録すること</div>
+            <div class="eg-rule-note">口頭で話が進んだ場合は管理者が相手方へ確認メールを送り証跡を作ること</div>
+          </div>
+        </div>
+        <div class="eg-rule-card" style="border-left-color:var(--purple)">
+          <div class="eg-rule-title">🔄 条件変更時の再承認ルール</div>
+          <div class="eg-rule-body">
+            <div class="eg-rule-item"><span class="eg-rule-label eg-label-warn">原則</span>一度合意した仕入れ・手数料条件を変更する場合も<strong>同じ決裁権限者の承認が必要</strong></div>
+            <div class="eg-rule-item"><span class="eg-rule-label eg-label-ng">禁止</span>なし崩し的な条件変更・担当者レベルでの独断合意は不可</div>
+            <div class="eg-rule-item"><span class="eg-rule-label">記録</span>変更内容・変更理由・適用開始日をLARK BASEに記録すること</div>
+          </div>
+        </div>
+        <div class="eg-rule-card" style="border-left-color:var(--amber)">
+          <div class="eg-rule-title">📊 価格の整合性・競合比較（推奨）</div>
+          <div class="eg-rule-body">
+            <div class="eg-rule-item"><span class="eg-rule-label eg-label-ok">推奨</span>市場相場・競合他社条件との比較を記録することを推奨する</div>
+            <div class="eg-rule-item"><span class="eg-rule-label">目的</span>「なぜその価格で合意したか」を後から説明できる状態を保つことでトラブル時の根拠にもなる</div>
+            <div class="eg-rule-note">必須義務ではないが、決裁管理者は価格交渉・決裁の経緯を自ら管理・保持しておくこと</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 記録・証跡管理 -->
+      <div class="sec-head" id="si-kisoku"><div class="sec-dot" style="background:var(--rust)"></div>📁 取引内容の記録・証跡管理（JSOX対応）</div>
+      <div class="notice" style="margin-bottom:14px"><div class="notice-icon">📌</div><div>上場企業グループ子会社として、取引条件の変更が<strong>適切に承認・記録・共有されているか</strong>が監査の確認対象になります。共有漏れ・記録漏れは「内部統制が機能していない」と判断されるリスクがあります。</div></div>
+      <div class="eg-rule-grid" style="margin-bottom:14px">
+        <div class="eg-rule-card" style="border-left-color:var(--navy)">
+          <div class="eg-rule-title">📝 LARK BASEへの登録項目（必須）</div>
+          <div class="eg-rule-body">
+            <div class="eg-rule-item"><span class="eg-rule-label">①</span>取引先名・商材名</div>
+            <div class="eg-rule-item"><span class="eg-rule-label">②</span>変更前条件・変更後条件</div>
+            <div class="eg-rule-item"><span class="eg-rule-label">③</span>変更適用開始日</div>
+            <div class="eg-rule-item"><span class="eg-rule-label">④</span>合意形式（合意書・メール・通知書等）</div>
+            <div class="eg-rule-item"><span class="eg-rule-label">⑤</span>決裁者・確認者</div>
+            <div class="eg-rule-item"><span class="eg-rule-label">⑥</span>登録日・登録者</div>
+          </div>
+        </div>
+        <div class="eg-rule-card" style="border-left-color:var(--amber)">
+          <div class="eg-rule-title">🗂️ 書類保管（物理・電子）</div>
+          <div class="eg-rule-body">
+            <div class="eg-rule-item"><span class="eg-rule-label">取引先申請・与信</span>経営管理部が管理・<strong>5年以上</strong>保管</div>
+            <div class="eg-rule-item"><span class="eg-rule-label">合意書・覚書</span>原本または電子で<strong>7年以上</strong>保管</div>
+            <div class="eg-rule-item"><span class="eg-rule-label">商談記録・変更履歴</span>LARK BASEで<strong>5年以上</strong>保管</div>
+            <div class="eg-rule-item"><span class="eg-rule-label">管理責任</span>経営管理部（伊藤博之部長）が保管状況を定期確認</div>
+            <div class="eg-rule-note">各決裁窓口管理者は担当商材の記録がLARK BASEに正しく登録されているか月次で確認する義務を負う</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 封緘・情報共有ルール -->
+      <div class="sec-head" id="si-fuuin"><div class="sec-dot" style="background:var(--purple)"></div>🔒 封緘義務・情報共有ルール</div>
+      <div class="eg-rule-grid">
+        <div class="eg-rule-card" style="border-left-color:var(--green)">
+          <div class="eg-rule-title">✅ 社内共有ルール（決裁管理者の責任）</div>
+          <div class="eg-rule-body">
+            <div class="eg-rule-item"><span class="eg-rule-label">必須共有先</span>業務管理部（オーダー処理・請求業務に必要な情報は<strong>必ず共有</strong>）</div>
+            <div class="eg-rule-item"><span class="eg-rule-label">共有手段</span>LARK BASE更新 → 自動チャット通知で関連管理者・業務管理部へ即時共有</div>
+            <div class="eg-rule-item"><span class="eg-rule-label">証跡</span>共有したことの送信記録・通知記録をLARK BASEに残すこと</div>
+            <div class="eg-rule-item"><span class="eg-rule-label">責任範囲</span>誰に・何を・いつ共有したかを<strong>決裁窓口管理者が管理する</strong></div>
+            <div class="eg-rule-item"><span class="eg-rule-label eg-label-warn">範囲管理</span>必要以上の範囲への共有は禁止。閲覧権限はLARK BASEの設定で管理すること</div>
+          </div>
+        </div>
+        <div class="eg-rule-card" style="border-left-color:var(--rust)">
+          <div class="eg-rule-title">🚫 社外への情報漏洩禁止（封緘義務）</div>
+          <div class="eg-rule-body">
+            <div class="eg-rule-item"><span class="eg-rule-label eg-label-ng">厳禁</span>経済条件・仕入れ条件・手数料率等を<strong>社外・競合他社・関係者へ口外することは厳禁</strong></div>
+            <div class="eg-rule-item"><span class="eg-rule-label eg-label-ng">厳禁</span>交渉中の条件・未確定の取引情報の外部への漏洩も同様に禁止</div>
+            <div class="eg-rule-item"><span class="eg-rule-label eg-label-warn">違反時</span>コンプライアンス規程違反として厳正対応。法的措置を含む対応を行う場合がある</div>
+            <div class="eg-rule-note">本ルールは③役職定義書・②職域定義書の行動基準にも反映。全社員が守るべき義務として位置づける。</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<button class="back-to-top" id="backToTop" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑</button>
+
+<script>
+// ===== TAB SWITCHING =====
+function switchTab(id, navEl) {
+  document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+  document.getElementById('tab-' + id).classList.add('active');
+  if (navEl) navEl.classList.add('active');
+  else {
+    var ni = document.getElementById('nav-' + id);
+    if (ni) ni.classList.add('active');
+  }
+  window.scrollTo({top: 0, behavior: 'smooth'});
+}
+
+function scrollToAnchor(id) {
+  setTimeout(() => {
+    var el = document.getElementById(id);
+    if (el) el.scrollIntoView({behavior: 'smooth', block: 'start'});
+  }, 80);
+}
+
+// ===== BACK TO TOP =====
+window.addEventListener('scroll', () => {
+  document.getElementById('backToTop').classList.toggle('visible', window.scrollY > 300);
+});
+
+// ===== ORG DETAILS =====
+var orgDetails = {
+  ceo: {title:'代表取締役　須田 宗樹', body:'全6部門に対する最終意思決定権を持つ。人事・経営方針・予算の最終承認者。各事業部長への直接指示権限を持ち、事業部間横断案件の最終調整も担う。'},
+  itoMiwa: {title:'取締役・経営補佐　伊藤 美和', body:'【役職】取締役・経営補佐\n【区分】親会社指定役員\n\n【役割】代表取締役（須田）と各事業部の間に立ち、経営補佐として全社の経営推進をサポートする。実線の指示系統（ライン権限）は持たないが、経営判断・方針に補佐的に関与する。\n\n【位置づけ】会社法上の取締役として善管注意義務・忠実義務を負う。親会社との連携・グループ経営方針の橋渡しを担う。\n\n【補佐的関与】各事業部への経営補佐として関与するが、各事業部への直接指示は行わず、代表取締役を経由した指示系統を尊重する。'},
+  ams: {title:'AMS事業部', body:'【部長】外﨑 幹也（取締役兼務）\n\n【業務範囲】不動産アライアンス営業・MISP・防犯カメラ・住宅設備保証\n\n【指示経路】代表取締役 → 部長（外﨑）→ 各課長・主任 → 一般\n\n【課構成】工事課（梅川課長）・管理課（間下主任）'},
+  'ams-koji': {title:'AMS事業部　工事課', body:'【課長】梅川 貴久\n\n【業務範囲】防犯カメラ・ネット設備の施工・LED切替工事・換気扇等少額工事\n\n【指示経路】部長（外﨑）→ 梅川課長 → 一般\n\n【重要】他部署からの直接依頼は受け付けない。必ずAMS事業部管理者を経由すること。'},
+  'ams-kanri': {title:'AMS事業部　管理課', body:'【主任】間下\n\n【業務範囲】営業管理・進捗管理・社内連絡調整・書類管理\n\n【指示経路】部長（外﨑）→ 間下主任 → 一般'},
+  cc: {title:'コールセンター事業部', body:'【部長】池田 祐介　【次長】笠原 康平\n\n【業務範囲】AMSリストを活用した生活サービス案内・インターネット・電気・ガス・ウォーターサーバー等の取次（全て電話対応）\n\n【指示経路】代表取締役 → 池田部長 → 笠原次長 → 一般\n\n旧AMS事業部内CSチームを独立事業部として再編。'},
+  partner: {title:'パートナー事業部', body:'【部長】横井 駿　【主任】市 奈緒美\n\n【業務範囲】インターネット回線販売代理店の開拓・オーダー集約・代理店管理業務\n\n【指示経路】代表取締役 → 横井部長 → 市主任 → 一般'},
+  houjin: {title:'法人営業部（旧：店舗ソリューション事業部）', body:'【部長】永野 恭平\n\n【業務範囲】店舗向け商材の直販・アライアンス・DXツール（LARK等）販売・コンサル・パートナー販路の開拓\n\n【指示経路】代表取締役 → 永野部長 → 一般'},
+  ops: {title:'業務管理部', body:'【部長】黒川 健一郎\n\n【業務範囲】各キャリアへの投入業務・売上・支払手数料の計算・検収・月額請求管理・未収対応\n\n【指示経路】代表取締役 → 黒川部長 → 一般\n\n【重要】他部署管理者から業務管理部一般社員への直接指示は禁止。依頼は必ず業務管理部管理者を通じて行うこと。'},
+  ga: {title:'経営管理部', body:'【部長】伊藤 博之\n\n【業務範囲】経理・会計業務・労務管理・IT統制・内部統制整備・運用・JSOX対応\n\n【指示経路】代表取締役 → 伊藤部長 → 一般\n\nIT・システム関連の変更は経営管理部管理者の承認が必要。'}
+};
+function showDetail(k) {
+  var d = orgDetails[k];
+  document.getElementById('org-detail-title').textContent = d.title;
+  document.getElementById('org-detail-body').innerHTML = d.body.replace(/\n/g, '<br>');
+  var p = document.getElementById('org-detail');
+  p.classList.add('on');
+  setTimeout(() => p.scrollIntoView({behavior:'smooth', block:'nearest'}), 50);
+}
+
+// ===== SHOKIKI =====
+var shokikiData = [
+  {id:'sk-ams', dept:'AMS事業部', color:'var(--purple)', customer:'不動産会社 / 賃貸管理会社 / 不動産オーナー', tasks:'集合住宅向け商材の提案営業、インターネット無料設備・防犯カメラ等の販売、入居者リスト連携提案', resp:'受注から契約締結までの責任、顧客との窓口管理、月額請求発生案件の顧客情報正確性の担保、入居者・不動産会社からのクレーム一次対応と上位者へのエスカレーション、工事トラブル発生時の顧客対応窓口', rule:'工事課への施工依頼は部署内管理者を通じて行う<br>業務管理部への投入依頼は所定フォームで行う'},
+  {id:'sk-cc', dept:'コールセンター事業部', color:'var(--green)', customer:'入居者（個人）', tasks:'AMSリストを活用した生活サービス案内、インターネット・電気・ガス・ウォーターサーバー等の取次、全て電話対応', resp:'案内品質・コンプライアンス管理、取次内容の正確性、業務管理部への投入依頼の責任、電話対応中のクレーム一次対応と通話録音の適切な管理・保管、重大クレーム・脅迫等は即時管理者へ報告しエスカレーションする', rule:'業務管理部への依頼は管理者承認後に所定フォームで行う<br>AMSへの入居者リスト追加依頼はAMS管理者へ'},
+  {id:'sk-partner', dept:'パートナー事業部', color:'var(--blue)', customer:'代理店 / パートナー企業', tasks:'インターネット回線販売代理店の開拓、オーダー集約・各種手続き、代理店管理業務', resp:'代理店との契約・関係管理、オーダー内容の正確性確認、業務管理部への投入依頼の責任、代理店経由のトラブル・クレーム発生時の一次対応と部長へのエスカレーション', rule:'業務管理部への依頼は管理者承認後に所定フォームで行う'},
+  {id:'sk-houjin', dept:'法人営業部', color:'var(--olive)', customer:'一般企業 / 法人・店舗', tasks:'店舗向け商材の直販・アライアンス、DXツール（LARK等）販売・コンサル、パートナー販路の開拓', resp:'法人顧客との契約・関係管理、見積・提案内容の正確性、アライアンス先との連携管理、法人顧客からのクレーム一次対応と部長へのエスカレーション、契約トラブル発生時は自己判断での解決を行わず必ず部長承認のうえ対応する', rule:'業務管理部への依頼は管理者承認後に所定フォームで行う'},
+  {id:'sk-ops', dept:'業務管理部', color:'var(--amber)', customer:'社内全部署 / キャリア・上位店', tasks:'各キャリアへの投入業務、不備発生時の各部署との連携、売上・支払手数料の計算・検収、月額請求管理（防犯カメラ等）、未収対応', resp:'投入業務の正確性・期日管理、手数料計算の正確性、未収案件の管理・報告、業務管理部一般社員への指示は業務管理部管理者のみが行う', rule:'<strong>【重要】他部署管理者から業務管理部一般社員への直接指示は禁止</strong><br>依頼は必ず業務管理部管理者を通じて行うこと'},
+  {id:'sk-ga', dept:'経営管理部', color:'var(--rust)', customer:'社内全部署 / 親会社・監査', tasks:'経理・会計業務、労務管理、IT統制・内部統制整備・運用、JSOX対応', resp:'財務情報の正確性、法令・規程遵守の管理、内部統制ルールの策定・運用監視、クレーム・トラブルが訴訟に発展した場合の法務対応窓口・外部弁護士との連携、社内のクレーム対応記録・証跡の保管管理。<strong>【情報管理】</strong>業務上知り得た経済条件・取引条件・顧客情報等を社外・競合他社へ口外することは厳禁。コンプライアンス規程に基づき厳正対応。', rule:'IT・システム関連の変更は経営管理部管理者の承認が必要<br>経費精算・支払は所定フォームで申請<br><strong>社外への情報漏洩は職種・役職を問わず厳禁</strong>'},
+  {id:'sk-ams-koji', dept:'工事課（AMS事業部内）', color:'#7B73D4', customer:'社内（AMS事業部）からの依頼のみ', tasks:'防犯カメラ・ネット設備の施工、LED切替工事、換気扇等少額工事、工事スケジュール管理、受注実績・着工実績の管理（当月・翌月着地）、AMS事業部部長への定期報告', resp:'AMS事業部管理者からの指示に基づく施工実行、施工完了報告・品質管理、工事に関する安全管理、施工クレーム・事故発生時はAMS事業部管理者へ即時報告し、対応内容・経緯を記録・保管する', rule:'<strong>他部署からの直接依頼は受け付けない</strong><br>必ずAMS事業部管理者を経由すること'},
+];
+
+var sl = document.getElementById('shokiki-list');
+var san = document.getElementById('shokiki-anchor-nav');
+shokikiData.forEach(d => {
+  var btn = document.createElement('button');
+  btn.className = 'anchor-btn';
+  btn.textContent = d.dept;
+  btn.onclick = () => scrollToAnchor(d.id);
+  san.appendChild(btn);
+
+  sl.innerHTML += `<div class="card" id="${d.id}" style="border-left:4px solid ${d.color}">
+    <div class="card-title"><div class="dot" style="background:${d.color}"></div>${d.dept}</div>
+    <table style="width:100%;font-size:12px;border-collapse:collapse">
+      <tr><td style="width:130px;color:var(--text3);padding:4px 8px 4px 0;vertical-align:top;font-weight:500;white-space:nowrap">主要顧客・接点</td><td style="padding:4px 0;color:var(--text2)">${d.customer}</td></tr>
+      <tr><td style="color:var(--text3);padding:4px 8px 4px 0;vertical-align:top;font-weight:500;white-space:nowrap">主な担当業務</td><td style="padding:4px 0;color:var(--text2)">${d.tasks}</td></tr>
+      <tr><td style="color:var(--text3);padding:4px 8px 4px 0;vertical-align:top;font-weight:500;white-space:nowrap">責任範囲</td><td style="padding:4px 0;color:var(--text2)">${d.resp}</td></tr>
+      <tr><td style="color:var(--text3);padding:4px 8px 4px 0;vertical-align:top;font-weight:500;white-space:nowrap">他部署への指示ルール</td><td style="padding:4px 0;color:var(--text2)">${d.rule}</td></tr>
+    </table></div>`;
+});
+
+// ===== YAKUSHOKU =====
+// ===== YAKUSHOKU REDESIGN =====
+
+// 役職サマリーデータ
+var yakuSummary = [
+  {
+    id:'yk-shacho', lv:'lv1', lvt:'Lv.1', yaku:'社長',
+    color:'#1A1A40', accentColor:'#AFA9EC',
+    role:'全業務の最終承認・会社代表行為・経営方針の決定',
+    resp:'全部署の業務結果に対する最終責任。対外的な法的責任。各部署管理者の報告内容を検証する。',
+  },
+  {
+    id:'yk-torishimariyaku', lv:'lv1b', lvt:'Lv.1b', yaku:'取締役',
+    color:'#2D2870', accentColor:'#CECBF6',
+    role:'代表取締役補佐・経営推進参画・全事業部の方向性への経営的関与・内部統制・IT統制の整備運用責任',
+    resp:'善管注意義務・忠実義務・競業避止義務の遵守。会社全体の業績・リスクへの責任。JSOX要件・内部統制ルールの率先遵守。',
+  },
+  {
+    id:'yk-bucho', lv:'lv2', lvt:'Lv.2', yaku:'部長',
+    color:'#444441', accentColor:'#fff',
+    role:'部門内業務全般の管理・契約承認・人事進言・予実管理・戦略立案と実行',
+    resp:'部門KPI達成責任。部下の業務品質管理責任。社長への報告内容の正確性責任。部下・他部署作成資料も確認後に提出。業務上知り得た経済条件・取引条件・顧客情報等の<strong>社外への漏洩は厳禁</strong>（コンプライアンス規程に基づき厳正対応）。',
+  },
+  {
+    id:'yk-jich', lv:'lv3', lvt:'Lv.3', yaku:'次長',
+    color:'#5F5E5A', accentColor:'#fff',
+    role:'部長決裁事項の起案・審査・部長補佐および不在時の一部代行・部門内横断調整',
+    resp:'起案・審査した案件の内容責任。部長への報告内容の正確性確認。現状把握と状況説明力の維持。',
+  },
+  {
+    id:'yk-kacho', lv:'lv4', lvt:'Lv.4', yaku:'課長',
+    color:'#888780', accentColor:'#fff',
+    role:'課内業務の承認・管理・少額支出の承認・部下への業務指示と評価',
+    resp:'課内KPI達成責任。部下の業務品質管理責任。部下作成資料は内容を検証してから上位者へ提出。',
+  },
+  {
+    id:'yk-kakaricho', lv:'lv5', lvt:'Lv.5', yaku:'係長',
+    color:'#A8A69E', accentColor:'#fff',
+    role:'担当業務の確認・承認補助・一般社員の作業確認・申請書類の一次チェック',
+    resp:'担当範囲の業務品質責任。一次チェックした書類の正確性責任。不明点は上位者に確認してから承認。',
+  },
+  {
+    id:'yk-shunin', lv:'lv6', lvt:'Lv.6', yaku:'主任',
+    color:'#C9C5B8', accentColor:'#444',
+    role:'実務の取りまとめ・申請書類の作成・一次チェック補助',
+    resp:'自ら作成した書類・数字の正確性責任。提出前に自己チェックを行う。不明点は係長・課長に確認。',
+  },
+  {
+    id:'yk-ippan', lv:'lv7', lvt:'Lv.7', yaku:'一般社員',
+    color:'#ECEAE4', accentColor:'#4A4A46',
+    role:'業務の実行・上位者への申請・報告・担当業務の遂行',
+    resp:'担当業務の実行責任。報告内容の正確性責任。不明点は必ず確認してから作業する。',
+  },
+];
+
+// サマリーカードを描画
+var ysg = document.getElementById('yaku-summary-grid');
+yakuSummary.forEach(d => {
+  ysg.innerHTML += `
+    <div class="yaku-summary-card" style="border-top-color:${d.color}">
+      <div class="yaku-sc-lv"><span class="lv ${d.lv}">${d.lvt}</span></div>
+      <div class="yaku-sc-name">${d.yaku}</div>
+      <div class="yaku-sc-role">${d.role}</div>
+      <div class="yaku-sc-resp">${d.resp}</div>
+    </div>`;
+});
+
+// 評価カテゴリ別比較テーブルデータ
+// cols: [一般, 主任, 係長, 課長, 次長, 部長, 取締役・社長]
+var yakuCols = ['一般', '主任', '係長', '課長', '次長', '部長', '取締役・社長'];
+
+var yakuMatrixData = {
+  kadai: {
+    label:'課題・問題点',
+    items: [
+      {
+        name:'捉え方',
+        vals:[
+          '担当する業務に工夫を加え実行し、改善すべき点を発見する',
+          '担当する業務の流れや目的を理解し担当する仕事の課題またはその課題を客観的に捉え、その要因を考える',
+          '担当する業務全般を把握、情報収集した上で、多面的・多角的に課題を捉え、本質的課題を考える',
+          '担当する業務全般を把握、情報収集した上で、多面的・多角的に課題を捉え、本質的課題を考える',
+          '市場環境や取引先等の変化、影響を把握し、業務遂行に重要な課題を明らかにしていく',
+          '市場環境や取引先等の変化、影響を把握し、業務遂行に重要な課題を明らかにしていく',
+          '経営環境全体を俯瞰し、会社の持続的成長に向けた本質的課題を明らかにする',
+        ]
+      },
+      {
+        name:'発信・提案',
+        vals:[
+          'アイデアを出して、工夫を加えたり、改善を提案していく。業務実行上の工夫や、気づいた改善点などを報告',
+          '課題解決に向けて、自身の経験、その他事例を参考にし提案をする',
+          '課題解決のため、自身の考える根拠を持った新しく価値ある提案をする',
+          '課題解決のため、自身の考える根拠を持った新しく価値ある提案をする',
+          '課題解決にあたり会社の意図、戦略を理解した上で実用価値の高い提案をする。また「実行」「反応」「成果」を一定の予見をした上で発信をおこなう',
+          '課題解決にあたり会社の意図、戦略を理解した上で実用価値の高い提案をする',
+          '経営判断の根拠を明示し、取締役会・社長への提言を行う',
+        ]
+      },
+      {
+        name:'意欲・姿勢',
+        vals:[
+          '担当する業務を、今以上の内容に上げていこうとする意欲・姿勢',
+          '今の自分では少し難しいと思うところに目標を置いて挑んだり、担当する仕事を充実させていこうとする意欲・姿勢',
+          '担当する業務をより強化する意欲を持ち、より高い目標に挑戦する姿勢',
+          '担当する業務をより強化する意欲を持ち、より高い目標に挑戦する姿勢',
+          '現状に満足せず、高い成果を目指して期待される以上のものを自ら作り出していこうとする意欲・姿勢',
+          '現状に満足せず、高い成果を目指して期待される以上のものを自ら作り出していこうとする意欲・姿勢',
+          '会社全体の成長に向けて常に高い目標を掲げ、経営者としての使命感を持って行動する',
+        ]
+      },
+    ]
+  },
+  gyomu: {
+    label:'業務取り組み',
+    items: [
+      {
+        name:'計画',
+        vals:[
+          '予め計画を立てて、仕事を進めていく',
+          '求められる成果、期限に向け、優先順位をつけて、行動計画を組み立てて仕事を進めていく',
+          '目標達成に向け、必要な事柄に優先順位をつけて、実行可能な行動計画を立てていく',
+          '目標達成に向け、必要な事柄に優先順位をつけて、実行可能な行動計画を立てていく',
+          '予測されるリスクや課題を考慮した上で経営効率の高い実行計画を立てる',
+          '予測されるリスクや課題を考慮した上で経営効率の高い実行計画を立てる',
+          '中長期の経営計画を策定し、リスクを織り込んだ実行可能な戦略を立案する',
+        ]
+      },
+      {
+        name:'判断',
+        vals:[
+          '会社規則・方針、業務ルール・マニュアルまた上司の指示を理解し、その基準に沿って判断をしていく',
+          '業務方針の本質を理解し、何が重要かを認識した上で、判断をおこなっていく',
+          '業務方針を理解し、何が重要かを認識した上で、先の事も考慮した判断をおこなっていく',
+          '業務方針を理解し、何が重要かを認識した上で、先の事も考慮した判断をおこなっていく',
+          '業務また会社方針を理解した上で的確な決断をおこなう。また目標達成や経営効率、最終利益（人・モノ・金）を見据えた決断をおこなう',
+          '業務また会社方針を理解した上で的確な決断をおこなう。最終利益を見据えた決断をおこなう',
+          '不確実な状況でも経営全体を見据えた根拠ある意思決定を行い、責任を取る',
+        ]
+      },
+      {
+        name:'行動',
+        vals:[
+          '計画と判断を元に業務を着実に遂行していく',
+          '担当する業務を着実に進め、達成・完了するまで粘り強く遂行していく',
+          '担当する業務を着実に進め、また困難な業務に対しても粘り強く、着実に完遂させる',
+          '担当する業務を着実に進め、また困難な業務に対しても粘り強く、着実に完遂させる',
+          '業務をより早く、高い位置で完遂させる',
+          '業務をより早く、高い位置で完遂させる',
+          '組織全体のスピードと質を高める仕組みを整え、成果を最大化させる',
+        ]
+      },
+      {
+        name:'意欲・姿勢',
+        vals:[
+          '求められる成果、期限をやり遂げようとする意欲・姿勢',
+          '自分の立場や業務範囲を自覚して求められる成果、期限をやり遂げようとする意欲・姿勢',
+          '自分の役割や立場を自覚し、仕事に全力傾注し、苦分を買ってでも責任を果たしていこうとする意欲・姿勢',
+          '自分の役割や立場を自覚し、仕事に全力傾注し、苦分を買ってでも責任を果たしていこうとする意欲・姿勢',
+          '自己の果たすべき投割、使命を認識し、当事者意識を強く持ち、責任を全うしていく意欲・姿勢',
+          '自己の果たすべき投割、使命を認識し、当事者意識を強く持ち、責任を全うしていく意欲・姿勢',
+          '経営者としての覚悟と使命感を持ち、組織全体の成果に対して責任を負う',
+        ]
+      },
+    ]
+  },
+  taijin: {
+    label:'対人対応',
+    items: [
+      {
+        name:'理解',
+        vals:[
+          '相手の話をきちんと聞き、そのポイントを的確に理解していく',
+          '相手の話をきちんと聞き、いわんとする要点をきちんと理解していく',
+          '相手の話をきちんと聞き、その意見や気持ちを受け止め、その真意を理解していく',
+          '相手の話をきちんと聞き、その意見や気持ちを受け止め、その真意を理解していく',
+          '相手の話をきちんと聞き、考えや意見を引き出しながら、その真意を深く理解する',
+          '相手の話をきちんと聞き、考えや意見を引き出しながら、その真意を深く理解する',
+          '多様なステークホルダーの意図を的確に読み取り、経営判断に活かす',
+        ]
+      },
+      {
+        name:'表現',
+        vals:[
+          '自分の意見や考えを分かりやすく表現し、相手に伝えていく',
+          '相手の立場や状況を考慮し、自分の考えを分かりやすく表現し、相手に伝えていく',
+          '相手の立場や状況を考慮し、自分の考えを分かりやすく表現し、相手が理解するまで伝える',
+          '相手の立場や状況を考慮し、自分の考えを分かりやすく表現し、相手が理解するまで伝える',
+          '相手の立場や状況を考慮し、自分の考えを明確に伝え、相手が理解するまで伝える',
+          '相手の立場や状況を考慮し、自分の考えを明確に伝え、相手が理解するまで伝える',
+          '組織内外に対して明確かつ説得力のあるメッセージを発信し、行動変容を促す',
+        ]
+      },
+      {
+        name:'姿勢',
+        vals:[
+          '他人の立場や状況に配慮し、社会や職場のルールに沿った行動をとっていこうとする姿勢',
+          '他人の立場や状況に配慮し、社会や職場のルールに沿った行動をとっていこうとする姿勢',
+          '全体の利益や他人の価値観を尊重していくとともに、社会や職場のルールに沿った行動をとっていこうとする姿勢',
+          '全体の利益や他人の価値観を尊重していくとともに、社会や職場のルールに沿った行動をとっていこうとする姿勢',
+          '全体の利益や他人の価値観を尊重していくとともに、社会や職場のルールに沿った行動をとっていこうとする姿勢',
+          '全体の利益や他人の価値観を尊重していくとともに、社会や職場のルールに沿った行動をとっていこうとする姿勢',
+          '多様性を尊重しながら、組織全体の心理的安全性を高める姿勢を示す',
+        ]
+      },
+    ]
+  },
+  team: {
+    label:'チームワーク',
+    items: [
+      {
+        name:'協調性',
+        vals:[
+          '組織の一員であることを自覚して、職場の良好な人間関係を維持しながらチームプレーに取り組んでいこうとする姿勢',
+          '後輩に気を配るとともに職場の仕事が円滑に進むよう協力していこうとする姿勢',
+          '後輩の成長を配慮するとともに職場の良好な人間関係構築に向けて働きかけていく姿勢',
+          '後輩の成長を配慮するとともに職場の良好な人間関係構築に向けて働きかけていく姿勢',
+          '【統率】部下や後輩の適正を考慮し、仕事の割り当てを行い、目標達成に向けて全員の意識を結集させる',
+          '【統率】部下や後輩の適正を考慮し、仕事の割り当てを行い、目標達成に向けて全員の意識を結集させる',
+          '組織全体のビジョンを示し、部門横断的な協力体制を構築・維持する',
+        ]
+      },
+      {
+        name:'規律性',
+        vals:[
+          '社会や職場のルール、申し合わせ事項を守っていこうとする姿勢',
+          '社会や職場のルール、申し合わせ事項に沿って、同僚や後輩の模範となるような行動をとっていこうとする姿勢',
+          '社会や職場のルールに沿って、同僚や後輩の模範となるような行動をとっていこうとする姿勢',
+          '社会や職場のルールに沿って、同僚や後輩の模範となるような行動をとっていこうとする姿勢',
+          '【支援】部下や後輩に期待・要望するところを明らかにし、側面から支援をしながら、成長を促していく',
+          '【支援】部下や後輩に期待・要望するところを明らかにし、側面から支援をしながら、成長を促していく',
+          '内部統制・JSOX要件を率先して遵守し、組織全体のコンプライアンス文化を醸成する',
+        ]
+      },
+      {
+        name:'育成・評価',
+        vals:[
+          '―',
+          '考えや行動を捉えて、その気持ちを理解していく',
+          '仕事や目標に向けての意識を高めさせ、職場の雰囲気を盛り上げていく',
+          '仕事や目標に向けての意識を高めさせ、職場の雰囲気を盛り上げていく',
+          '【評価】言動や成果を的確に捉えたなく捉え、性格や能力、適正をすばやく見抜いていく',
+          '【評価】言動や成果を的確に捉えたなく捉え、性格や能力、適正をすばやく見抜いていく',
+          '次世代のリーダーを計画的に育成し、組織の持続的成長を担保する',
+        ]
+      },
+    ]
+  },
+  chishiki: {
+    label:'知識・技能',
+    items: [
+      {
+        name:'専門知識・技能',
+        vals:[
+          '担当する分野についての基礎的な知識や技能\n社内関連業務の基礎的知識',
+          '担当する分野についての基礎的な知識や技能\n社内関連業務の基礎的知識',
+          '業界の動向と担当分野における専門知識や技能\n業界、社会、経営、経済についての一般的知識',
+          '業界の動向と担当分野における専門知識や技能\n業界、社会、経営、経済についての一般的知識',
+          '業界の動向と担当分野における専門知識や技能\n業界、社会、経営、経済についての広範な知識',
+          '業界の動向と担当分野における専門知識や技能\n業界、社会、経営、経済についての広範な知識',
+          '経営戦略・財務・法務・JSOX等の経営全般にわたる高度な知識と業界動向の深い理解',
+        ]
+      },
+    ]
+  },
+};
+
+// カテゴリ別テーブルを描画
+function buildYakuMatrix(tableId, categoryKey) {
+  var tbl = document.getElementById(tableId);
+  var data = yakuMatrixData[categoryKey];
+  if (!tbl || !data) return;
+
+  // ヘッダー
+  var hRow = '<thead><tr><th class="th-cat">カテゴリ</th><th class="th-item">項目</th>';
+  yakuCols.forEach(col => { hRow += `<th>${col}</th>`; });
+  hRow += '</tr></thead>';
+  tbl.innerHTML = hRow;
+
+  var tbody = '<tbody>';
+  data.items.forEach((item, itemIdx) => {
+    var row = '<tr>';
+    if (itemIdx === 0) {
+      row += `<td class="ym-cat" rowspan="${data.items.length}">${data.label}</td>`;
+    }
+    row += `<td class="ym-item">${item.name}</td>`;
+    item.vals.forEach(val => {
+      if (val === '―' || val === '') {
+        row += `<td class="ym-cell ym-empty">―</td>`;
+      } else {
+        row += `<td class="ym-cell">${val.replace(/\n/g,'<br>')}</td>`;
+      }
+    });
+    row += '</tr>';
+    tbody += row;
+  });
+  tbody += '</tbody>';
+  tbl.innerHTML += tbody;
+}
+
+buildYakuMatrix('ym-kadai',    'kadai');
+buildYakuMatrix('ym-gyomu',    'gyomu');
+buildYakuMatrix('ym-taijin',   'taijin');
+buildYakuMatrix('ym-team',     'team');
+buildYakuMatrix('ym-chishiki', 'chishiki');
+
+// ===== MATRIX =====
+var matrixData = [
+  {cat:'契約・取引', id:'mx-keiyaku', items:[
+    {name:'顧客契約締結（100万円以上）',vals:['◎','○','△','―','―','―','―']},
+    {name:'顧客契約締結（100万円未満）',vals:['◎','◎','○','△','―','―','―']},
+    {name:'仕入・業者契約締結（100万円以上）',vals:['◎','○','△','―','―','―','―']},
+    {name:'仕入・業者契約締結（100万円未満）',vals:['◎','◎','○','△','―','―','―']},
+  ]},
+  {cat:'支出・購買', id:'mx-shishutsu', items:[
+    {name:'物品購入・経費（10万円以上）',vals:['◎','○','△','―','―','―','―']},
+    {name:'物品購入・経費（3万円以上10万円未満）',vals:['◎','◎','○','○','―','―','―']},
+    {name:'物品購入・経費（3万円未満）',vals:['◎','◎','○','◎','○','―','△']},
+    {name:'経費精算申請（全額）',vals:['―','◎','○','○','―','―','△']},
+  ]},
+  {cat:'人事・労務', id:'mx-jinji', items:[
+    {name:'採用決定',vals:['◎','○','△','―','―','―','―']},
+    {name:'人事異動・配置変更',vals:['◎','○','△','―','―','―','―']},
+    {name:'人事評価の実施',vals:['◎','◎','○','○','△','―','―']},
+    {name:'勤怠・休暇承認',vals:['―','◎','○','◎','○','―','△']},
+  ]},
+  {cat:'営業活動', id:'mx-eigyo', items:[
+    {name:'見積書の発行（100万円以上）',vals:['◎','○','△','―','―','―','―']},
+    {name:'見積書の発行（100万円未満）',vals:['―','◎','○','◎','○','△','△']},
+    {name:'提案書・営業資料の対外提出',vals:['―','◎','○','◎','○','△','△']},
+    {name:'受注報告・案件登録',vals:['―','◎','○','◎','○','△','○']},
+  ]},
+  {cat:'工事・施工', id:'mx-koji', items:[
+    {name:'工事受注承認',vals:['―','◎','○','◎','―','―','―']},
+    {name:'施工指示の発行',vals:['―','◎','○','◎','○','―','―']},
+    {name:'完工確認・検収',vals:['―','◎','○','◎','○','△','―']},
+  ]},
+  {cat:'業務投入・検収', id:'mx-nyushutsu', items:[
+    {name:'キャリアへの投入依頼承認',vals:['―','◎','○','◎','○','―','△']},
+    {name:'手数料計算・検収の確認',vals:['―','◎','○','◎','○','△','△']},
+    {name:'不備対応の承認',vals:['―','◎','○','◎','○','―','△']},
+  ]},
+  {cat:'請求・未収管理', id:'mx-seikyuu', items:[
+    {name:'月額請求内容の確認',vals:['―','◎','○','◎','○','△','△']},
+    {name:'未収対応の実施・報告',vals:['―','◎','○','◎','○','△','△']},
+    {name:'未収の社長報告',vals:['◎','○','△','―','―','―','―']},
+  ]},
+  {cat:'KPI・報告', id:'mx-kpi', items:[
+    {name:'社長へのKPI報告',vals:['◎','○','△','―','―','―','―']},
+    {name:'報告資料の作成（部内）',vals:['―','◎','○','◎','○','△','○']},
+    {name:'報告資料の確認・承認（提出前）',vals:['―','◎','○','◎','―','―','―']},
+  ]},
+  {cat:'情報・システム', id:'mx-system', items:[
+    {name:'社外秘情報の開示承認',vals:['◎','○','△','―','―','―','―']},
+    {name:'システム・IT変更の承認',vals:['◎','◎','○','―','―','―','―']},
+  ]},
+  {cat:'経営管理・経理', id:'mx-soumu', items:[
+    {name:'支払承認（100万円以上）',vals:['◎','○','△','―','―','―','―']},
+    {name:'支払承認（100万円未満）',vals:['◎','◎','○','○','―','―','―']},
+    {name:'帳票・請求書の発行承認',vals:['―','◎','○','◎','○','―','△']},
+  ]},
+  {cat:'勤怠・行動管理', id:'mx-kintai', items:[
+    {name:'有給休暇の承認',vals:['―','◎','○','◎','○','―','△']},
+    {name:'公休変更の承認',vals:['―','◎','○','◎','○','―','△']},
+    {name:'直行・直帰の承認',vals:['―','◎','◎','―','―','―','―']},
+    {name:'出張申請の承認',vals:['◎','◎','○','△','―','―','―']},
+  ]},
+  {cat:'採用・求人', id:'mx-saiyou', items:[
+    {name:'求人票・採用条件の起案',vals:['―','○','△','―','―','―','―']},
+    {name:'給与・待遇条件の決定',vals:['◎','○','―','―','―','―','―']},
+    {name:'採用面接の実施',vals:['―','◎','○','○','―','―','―']},
+    {name:'採用・不採用の最終決裁',vals:['◎','○','△','―','―','―','―']},
+  ]},
+  {cat:'事故・トラブル対応', id:'mx-jikou', items:[
+    {name:'事故・トラブル発生時の初動対応指示',vals:['―','◎','○','◎','―','―','―']},
+    {name:'社長への事故・トラブル報告',vals:['◎','○','△','―','―','―','―']},
+    {name:'対外対応・謝罪・示談の承認',vals:['◎','○','―','―','―','―','―']},
+    {name:'金銭発生を伴う始末書・弁償の承認',vals:['◎','○','△','―','―','―','―']},
+    {name:'始末書の提出受理（金銭なし）',vals:['―','◎','○','◎','―','―','―']},
+  ]},
+  {cat:'社員プライベート・労務問題', id:'mx-private', items:[
+    {name:'社員プライベート問題の一次対応・傾聴',vals:['―','◎','○','◎','―','―','―']},
+    {name:'社長へのエスカレーション判断',vals:['◎','○','―','―','―','―','―']},
+    {name:'経営管理部への連携・労務対応依頼',vals:['―','◎','○','△','―','―','―']},
+    {name:'懲戒・処分の決定',vals:['◎','○','―','―','―','―','―']},
+  ]},
+];
+
+function cellClass(v) {
+  if (v==='◎') return 'mx-cell mx-kk';
+  if (v==='○') return 'mx-cell mx-ok';
+  if (v==='△') return 'mx-cell mx-hj';
+  return 'mx-cell mx-no';
+}
+
+var mb = document.getElementById('matrix-body');
+var man = document.getElementById('matrix-anchor-nav');
+matrixData.forEach(cat => {
+  var btn = document.createElement('button');
+  btn.className = 'anchor-btn';
+  btn.textContent = cat.cat;
+  btn.onclick = () => scrollToAnchor(cat.id);
+  man.appendChild(btn);
+
+  cat.items.forEach((item, i) => {
+    var row = '<tr>';
+    if (i === 0) row += `<td class="td-dept" rowspan="${cat.items.length}" id="${cat.id}">${cat.cat}</td>`;
+    row += `<td>${item.name}</td>`;
+    item.vals.forEach(v => { row += `<td class="${cellClass(v)}">${v}</td>`; });
+    row += '</tr>';
+    mb.innerHTML += row;
+  });
+});
+
+// ===== SEARCH =====
+var searchIndex = [];
+
+// Add org/dept data
+shokikiData.forEach(d => {
+  searchIndex.push({tab:'shokiki', anchor:d.id, tag:'部署', text:d.dept, sub:'職域定義書'});
+  searchIndex.push({tab:'shokiki', anchor:d.id, tag:'業務', text:d.tasks.substring(0,40)+'…', sub:d.dept});
+});
+
+// Add person data
+var persons = [
+  {name:'須田 宗樹', role:'代表取締役', tab:'org', anchor:null},
+  {name:'伊藤 美和', role:'取締役・経営補佐（親会社指定役員）', tab:'org', anchor:null},
+  {name:'外﨑 幹也', role:'AMS事業部 部長（取締役）', tab:'org', anchor:null},
+  {name:'梅川 貴久', role:'AMS事業部 工事課長', tab:'org', anchor:null},
+  {name:'間下', role:'AMS事業部 管理課 主任', tab:'org', anchor:null},
+  {name:'池田 祐介', role:'コールセンター事業部 部長', tab:'org', anchor:null},
+  {name:'笠原 康平', role:'コールセンター事業部 次長', tab:'org', anchor:null},
+  {name:'横井 駿', role:'パートナー事業部 部長', tab:'org', anchor:null},
+  {name:'市 奈緒美', role:'パートナー事業部 主任', tab:'org', anchor:null},
+  {name:'永野 恭平', role:'法人営業部 部長', tab:'org', anchor:null},
+  {name:'黒川 健一郎', role:'業務管理部 部長', tab:'org', anchor:null},
+  {name:'伊藤 博之', role:'経営管理部 部長', tab:'org', anchor:null},
+];
+persons.forEach(p => {
+  searchIndex.push({tab:p.tab, anchor:p.anchor, tag:'人物', text:p.name, sub:p.role});
+});
+
+// Add matrix categories
+matrixData.forEach(cat => {
+  searchIndex.push({tab:'matrix', anchor:cat.id, tag:'権限', text:cat.cat, sub:'職務権限マトリクス'});
+  cat.items.forEach(item => {
+    searchIndex.push({tab:'matrix', anchor:cat.id, tag:'権限', text:item.name, sub:cat.cat});
+  });
+});
+
+// ===== SHINSEI DATA =====
+var shinseiData = {
+
+  // ── 就業規則・社内規程 ──────────────────────────
+  kisoku: [
+    {
+      icon:'📜', name:'就業規則',
+      desc:'労働時間・休日・懲戒・服務規律等、雇用に関する基本ルールを定めた規程。全社員が必ず把握すること。',
+      dept:'経営管理部', deptStyle:'sh-badge-file',
+      linkLabel:'Driveで閲覧する', url:'#TBD',
+      note:'改訂時は経営管理部より全社周知。疑問点は伊藤部長まで。'
+    },
+    {
+      icon:'💼', name:'コンプライアンス規程',
+      desc:'法令遵守・情報管理・利益相反・ハラスメント防止等に関する社内規程。',
+      dept:'経営管理部', deptStyle:'sh-badge-file',
+      linkLabel:'Driveで閲覧する', url:'#TBD',
+      note:'違反事例・相談窓口についても本規程に記載。'
+    },
+    {
+      icon:'🔐', name:'情報セキュリティポリシー',
+      desc:'社内データ・顧客情報の適正取扱い、ITシステム利用に関するセキュリティ規程。',
+      dept:'経営管理部', deptStyle:'sh-badge-file',
+      linkLabel:'Driveで閲覧する', url:'#TBD',
+      note:'IT・システム構成変更は経営管理部管理者の承認が必要。'
+    },
+    {
+      icon:'📊', name:'職務権限規程（正式版）',
+      desc:'本ポータル「職務権限マトリクス」の正式版規程文書。承認基準・決裁フローを明文化。',
+      dept:'経営管理部', deptStyle:'sh-badge-file',
+      linkLabel:'Driveで閲覧する', url:'#TBD',
+      note:'ポータルの⑤職務権限マトリクスタブと併せて参照すること。'
+    },
+    {
+      icon:'👤', name:'個人情報取扱規程',
+      desc:'顧客・社員の個人情報の収集・管理・廃棄に関する規程。',
+      dept:'経営管理部', deptStyle:'sh-badge-file',
+      linkLabel:'Driveで閲覧する', url:'#TBD',
+      note:'顧客情報の外部共有・持ち出しは原則禁止。'
+    },
+    {
+      icon:'🤝', name:'ハラスメント防止規程',
+      desc:'パワーハラスメント・セクシャルハラスメント等の防止と相談窓口に関する規程。',
+      dept:'経営管理部', deptStyle:'sh-badge-file',
+      linkLabel:'Driveで閲覧する', url:'#TBD',
+      note:'相談窓口：経営管理部（伊藤部長）または代表取締役（須田）。'
+    },
+  ],
+
+  // ── 内部統制・JSOXルール ────────────────────────
+  naibu: [
+    {
+      icon:'🏗️', name:'内部統制運用マニュアル（全社版）',
+      desc:'親会社（上場企業）のJSOX要件に対応するための内部統制全体像・各部署の役割・対応手順を定めたマニュアル。',
+      dept:'経営管理部', deptStyle:'sh-badge-file',
+      linkLabel:'Driveで閲覧する', url:'#TBD',
+      note:'JSOX対応は上場企業グループ子会社として全社員に遵守義務がある。'
+    },
+    {
+      icon:'✅', name:'承認・証跡管理ルール（JSOX対応）',
+      desc:'報告資料・契約書・精算書類への作成者・確認者・提出日記載ルール、証跡保管期間の一覧。',
+      dept:'経営管理部', deptStyle:'sh-badge-file',
+      linkLabel:'Driveで閲覧する', url:'#TBD',
+      note:'本ポータル⑥「報告・証跡管理」タブとセットで参照すること。'
+    },
+    {
+      icon:'🗂️', name:'書類保管期間一覧表',
+      desc:'契約書・精算書・KPI報告書・工事完工報告書等、書類種別ごとの保管期間・保管場所一覧。',
+      dept:'経営管理部', deptStyle:'sh-badge-file',
+      linkLabel:'Driveで閲覧する', url:'#TBD',
+      note:'KPI報告書3年／売上計算書5年／契約書7年（詳細は本表参照）。'
+    },
+    {
+      icon:'🔍', name:'ITシステム統制規程',
+      desc:'社内システム・クラウドサービスの追加・変更・廃止に関する承認フローと統制ルール。',
+      dept:'経営管理部', deptStyle:'sh-badge-file',
+      linkLabel:'Driveで閲覧する', url:'#TBD',
+      note:'IT変更は経営管理部へ申請→承認後に実施すること。'
+    },
+    {
+      icon:'📋', name:'内部統制チェックリスト（管理者用）',
+      desc:'各部署管理者が月次・四半期で実施すべき内部統制確認事項のチェックリスト。',
+      dept:'経営管理部', deptStyle:'sh-badge-file',
+      linkLabel:'Driveで開く', url:'#TBD',
+      note:'管理者は定期的に実施し、経営管理部へ提出すること。'
+    },
+  ],
+
+  // ── 管理業務マニュアル ───────────────────────────
+  gyomuManual: [
+    {
+      icon:'⚙️', name:'業務管理部 業務マニュアル（投入・検収）',
+      desc:'キャリアへの投入業務フロー・不備対応・検収手順・月次締め作業の手順書。業務管理部が管理。',
+      dept:'業務管理部', deptStyle:'sh-badge-file',
+      linkLabel:'Driveで閲覧する', url:'#TBD',
+      note:'投入依頼は管理者承認後に所定フォームで提出すること。直接依頼禁止。'
+    },
+    {
+      icon:'📈', name:'売上・手数料計算マニュアル',
+      desc:'月次の売上集計・支払手数料計算・請求管理の手順書。業務管理部が作成・管理。',
+      dept:'業務管理部', deptStyle:'sh-badge-file',
+      linkLabel:'Driveで閲覧する', url:'#TBD',
+      note:'計算結果は業務管理部管理者が確認・承認のうえ社長へ月次報告。'
+    },
+    {
+      icon:'💰', name:'未収管理・対応マニュアル',
+      desc:'未収発生時の確認フロー・獲得部署への連携手順・回収対応・月次報告ルールをまとめた手順書。',
+      dept:'業務管理部', deptStyle:'sh-badge-file',
+      linkLabel:'Driveで閲覧する', url:'#TBD',
+      note:'未収一覧は月次で業務管理部管理者が社長へ報告。'
+    },
+    {
+      icon:'🔧', name:'工事業務マニュアル（AMS工事課）',
+      desc:'防犯カメラ・ネット設備施工・LED切替工事の施工フロー・安全管理・完工報告手順書。',
+      dept:'AMS事業部 工事課', deptStyle:'sh-badge-file',
+      linkLabel:'Driveで閲覧する', url:'#TBD',
+      note:'工事依頼はAMS事業部管理者経由のみ。他部署からの直接依頼は受け付けない。'
+    },
+    {
+      icon:'📞', name:'コールセンター業務マニュアル',
+      desc:'電話対応フロー・取次手順・品質基準・クレーム対応フロー・録音管理ルール。',
+      dept:'コールセンター事業部', deptStyle:'sh-badge-file',
+      linkLabel:'Driveで閲覧する', url:'#TBD',
+      note:'重大クレーム・脅迫等は即時管理者へ報告しエスカレーションすること。'
+    },
+    {
+      icon:'🤝', name:'クレーム対応マニュアル（全社共通）',
+      desc:'顧客・代理店からのクレーム初動対応・エスカレーションフロー・記録保管・訴訟対応窓口の手順書。',
+      dept:'経営管理部', deptStyle:'sh-badge-file',
+      linkLabel:'Driveで閲覧する', url:'#TBD',
+      note:'訴訟発展時は経営管理部・外部弁護士へ即時連携。自己判断での示談は禁止。'
+    },
+    {
+      icon:'👥', name:'入社・オンボーディングガイド',
+      desc:'新入社員・中途入社向けの初日手続き・各種設定・社内ルール説明資料一覧。',
+      dept:'経営管理部', deptStyle:'sh-badge-file',
+      linkLabel:'Driveで閲覧する', url:'#TBD',
+      note:''
+    },
+    {
+      icon:'🖥️', name:'社内ツール利用マニュアル（LARK等）',
+      desc:'LARK・その他社内システムの利用方法・権限申請・禁止事項をまとめたマニュアル。',
+      dept:'経営管理部', deptStyle:'sh-badge-file',
+      linkLabel:'Driveで閲覧する', url:'#TBD',
+      note:'ツール追加・アカウント発行は経営管理部へ申請すること。'
+    },
+  ],
+
+  // ── 経費・支払申請 ────────────────────────────────
+  keihi: [
+    {
+      icon:'🧾', name:'経費精算申請',
+      desc:'交通費・接待費・備品購入等の経費精算。領収書を必ず添付。',
+      dept:'経営管理部', deptStyle:'sh-badge-form',
+      linkLabel:'申請フォームを開く', url:'#TBD',
+      note:'申請後は直属管理者→部長の承認が必要。承認なき精算は無効。'
+    },
+    {
+      icon:'💳', name:'立替払い精算',
+      desc:'業務上の立替払いの精算申請。3万円以上は部長承認が必要。',
+      dept:'経営管理部', deptStyle:'sh-badge-form',
+      linkLabel:'申請フォームを開く', url:'#TBD',
+      note:'証憑（領収書・請求書）を添付すること。'
+    },
+    {
+      icon:'🏦', name:'支払依頼書',
+      desc:'業者・外部への支払依頼。100万円以上は社長決裁。',
+      dept:'経営管理部', deptStyle:'sh-badge-file',
+      linkLabel:'書式をダウンロード', url:'#TBD',
+      note:'権限マトリクスの承認基準に従うこと。'
+    },
+    {
+      icon:'🚗', name:'出張申請・精算',
+      desc:'出張前の事前申請と出張後の精算を一括管理。',
+      dept:'経営管理部', deptStyle:'sh-badge-form',
+      linkLabel:'申請フォームを開く', url:'#TBD',
+      note:'出張申請は社長承認が必要（マトリクス参照）。'
+    },
+  ],
+
+  // ── 休暇・勤怠申請 ────────────────────────────────
+  kyuka: [
+    {
+      icon:'🌴', name:'有給休暇申請',
+      desc:'有給休暇の取得申請。直属管理者→部長の承認が必要。',
+      dept:'経営管理部', deptStyle:'sh-badge-form',
+      linkLabel:'申請フォームを開く', url:'#TBD',
+      note:''
+    },
+    {
+      icon:'🔄', name:'公休変更申請',
+      desc:'公休日の変更・振替申請。変更後の休日を明記すること。',
+      dept:'経営管理部', deptStyle:'sh-badge-form',
+      linkLabel:'申請フォームを開く', url:'#TBD',
+      note:''
+    },
+    {
+      icon:'🏃', name:'直行・直帰申請',
+      desc:'直行・直帰の事前申請。部長または次長の承認が必要。',
+      dept:'各部署管理者', deptStyle:'sh-badge-chat',
+      linkLabel:'管理者へ連絡', url:'#TBD',
+      note:''
+    },
+    {
+      icon:'🏥', name:'特別休暇・慶弔申請',
+      desc:'結婚・忌引・傷病等の特別休暇申請。証明書類が必要な場合あり。',
+      dept:'経営管理部', deptStyle:'sh-badge-form',
+      linkLabel:'申請フォームを開く', url:'#TBD',
+      note:''
+    },
+    {
+      icon:'🕐', name:'勤怠修正申請',
+      desc:'打刻忘れ・修正が必要な場合の申請。修正理由を必ず記載すること。',
+      dept:'経営管理部', deptStyle:'sh-badge-form',
+      linkLabel:'申請フォームを開く', url:'#TBD',
+      note:''
+    },
+  ],
+
+  // ── 業務申請・依頼フォーム ────────────────────────
+  gyomu: [
+    {
+      icon:'📦', name:'業務管理部への投入依頼',
+      desc:'キャリアへの回線投入依頼フォーム。管理者承認後に提出すること。',
+      dept:'業務管理部', deptStyle:'sh-badge-form',
+      linkLabel:'依頼フォームを開く', url:'#TBD',
+      note:'管理者が内容を確認してから送付すること。未確認の直接送付は禁止。'
+    },
+    {
+      icon:'🔧', name:'工事依頼フォーム',
+      desc:'防犯カメラ・ネット設備等の施工依頼。AMS事業部管理者経由のみ受付。',
+      dept:'AMS事業部', deptStyle:'sh-badge-form',
+      linkLabel:'依頼フォームを開く', url:'#TBD',
+      note:'他部署からの直接依頼は受け付けない。'
+    },
+    {
+      icon:'📊', name:'KPI報告書テンプレート',
+      desc:'月次KPI報告書の標準フォーマット。管理者確認後に社長へ提出すること。',
+      dept:'各部署', deptStyle:'sh-badge-file',
+      linkLabel:'テンプレートを開く', url:'#TBD',
+      note:'提出書類には作成者・確認者・提出日を必ず明記。'
+    },
+    {
+      icon:'📝', name:'始末書テンプレート',
+      desc:'インシデント・ミス発生時の始末書書式。',
+      dept:'経営管理部', deptStyle:'sh-badge-file',
+      linkLabel:'書式をダウンロード', url:'#TBD',
+      note:'金銭発生を伴う場合は社長承認が必要。'
+    },
+    {
+      icon:'📋', name:'見積書・契約書テンプレート',
+      desc:'標準見積書・契約書フォーマット。金額に応じて承認者が異なる（マトリクス参照）。',
+      dept:'各部署', deptStyle:'sh-badge-file',
+      linkLabel:'書式をダウンロード', url:'#TBD',
+      note:'100万円以上は社長決裁。'
+    },
+    {
+      icon:'🏭', name:'受注報告・案件登録フォーム',
+      desc:'案件の受注報告と社内登録用フォーム。',
+      dept:'各部署', deptStyle:'sh-badge-form',
+      linkLabel:'フォームを開く', url:'#TBD',
+      note:''
+    },
+    {
+      icon:'🔍', name:'未収報告フォーム',
+      desc:'未収発生時の業務管理部への報告フォーム。月次で社長へ業務管理部管理者が報告。',
+      dept:'業務管理部', deptStyle:'sh-badge-form',
+      linkLabel:'フォームを開く', url:'#TBD',
+      note:''
+    },
+  ],
+};
+
+function buildShinseiGrid(gridId, items) {
+  var grid = document.getElementById(gridId);
+  if (!grid) return;
+  items.forEach(item => {
+    var isWip = item.url === '#TBD';
+    grid.innerHTML += `
+      <div class="sh-card">
+        ${isWip ? '<div class="sh-wip">URL未設定</div>' : ''}
+        <div class="sh-card-icon">${item.icon}</div>
+        <div class="sh-card-body">
+          <div class="sh-card-name">${item.name}</div>
+          <div class="sh-card-desc">${item.desc}</div>
+          <div class="sh-card-meta">
+            <span class="sh-card-dept ${item.deptStyle}">${item.dept}</span>
+            <a class="sh-card-link ${isWip ? 'disabled' : ''}" href="${isWip ? '#' : item.url}" target="${isWip ? '' : '_blank'}" onclick="${isWip ? 'return false' : ''}">
+              🔗 ${isWip ? item.linkLabel + '（準備中）' : item.linkLabel}
+            </a>
+          </div>
+          ${item.note ? '<div class="sh-note">📌 ' + item.note + '</div>' : ''}
+        </div>
+      </div>`;
+  });
+}
+
+buildShinseiGrid('grid-kisoku',       shinseiData.kisoku);
+buildShinseiGrid('grid-naibu',        shinseiData.naibu);
+buildShinseiGrid('grid-gyomu-manual', shinseiData.gyomuManual);
+buildShinseiGrid('grid-keihi',        shinseiData.keihi);
+buildShinseiGrid('grid-kyuka',        shinseiData.kyuka);
+buildShinseiGrid('grid-gyomu',        shinseiData.gyomu);
+
+// Add shinsei to search index
+var shinseiCatMap = {
+  kisoku:     'sh-kisoku',
+  naibu:      'sh-naibu',
+  gyomuManual:'sh-gyomu-manual',
+  keihi:      'sh-keihi',
+  kyuka:      'sh-kyuka',
+  gyomu:      'sh-gyomu',
+};
+Object.keys(shinseiData).forEach(cat => {
+  shinseiData[cat].forEach(item => {
+    searchIndex.push({tab:'shinsei', anchor: shinseiCatMap[cat] || 'sh-'+cat, tag:'申請', text:item.name, sub:item.desc.substring(0,30)+'…'});
+  });
+});
+
+// Add rules
+var ruleItems = [
+  {text:'工事課への施工依頼ルール', sub:'業務連携フロー', tab:'flow'},
+  {text:'業務管理部への直接指示禁止', sub:'業務連携フロー', tab:'flow'},
+  {text:'KPI報告書の証跡管理', sub:'報告・証跡管理', tab:'shouko'},
+  {text:'未収対応ルール', sub:'業務連携フロー', tab:'flow'},
+  {text:'JSOX対応・承認証跡', sub:'報告・証跡管理', tab:'shouko'},
+];
+ruleItems.forEach(r => {
+  searchIndex.push({tab:r.tab, anchor:null, tag:'ルール', text:r.text, sub:r.sub});
+});
+
+var tagColors = {
+  '部署':'#185FA5', '業務':'#3B6D11', '人物':'#854F0B',
+  '権限':'#993C1D', 'ルール':'#5B52C8', '申請':'#0F6E56'
+};
+var tagBg = {
+  '部署':'#E6F1FB', '業務':'#EAF3DE', '人物':'#FAEEDA',
+  '権限':'#FAECE7', 'ルール':'#EEEDFE', '申請':'#E1F5EE'
+};
+
+var sinput = document.getElementById('searchInput');
+var sresults = document.getElementById('searchResults');
+
+sinput.addEventListener('input', function() {
+  var q = this.value.trim();
+  if (!q) { sresults.classList.remove('visible'); return; }
+
+  var hits = searchIndex.filter(item =>
+    item.text.includes(q) || item.sub.includes(q) || item.tag.includes(q)
+  ).slice(0, 12);
+
+  if (!hits.length) {
+    sresults.innerHTML = '<div class="sr-empty">「'+q+'」に一致する項目が見つかりません</div>';
+    sresults.classList.add('visible');
+    return;
+  }
+
+  // Group by tag
+  var groups = {};
+  hits.forEach(h => {
+    if (!groups[h.tag]) groups[h.tag] = [];
+    groups[h.tag].push(h);
+  });
+
+  var html = '';
+  Object.keys(groups).forEach(tag => {
+    html += `<div class="sr-group"><div class="sr-group-label">${tag}</div>`;
+    groups[tag].forEach(h => {
+      html += `<div class="sr-item" onclick="handleSearchClick('${h.tab}','${h.anchor||''}');closeSr()">
+        <span class="sr-item-tag" style="background:${tagBg[h.tag]||'#eee'};color:${tagColors[h.tag]||'#333'}">${h.tag}</span>
+        <div><div class="sr-item-text">${h.text}</div><div class="sr-item-sub">${h.sub}</div></div>
+      </div>`;
+    });
+    html += '</div>';
+  });
+  sresults.innerHTML = html;
+  sresults.classList.add('visible');
+});
+
+function handleSearchClick(tab, anchor) {
+  switchTab(tab, null);
+  if (anchor) scrollToAnchor(anchor);
+}
+function closeSr() {
+  sresults.classList.remove('visible');
+  sinput.value = '';
+}
+
+document.addEventListener('click', function(e) {
+  if (!e.target.closest('.search-wrap')) closeSr();
+});
+sinput.addEventListener('keydown', function(e) {
+  if (e.key === 'Escape') closeSr();
+});
+</script>
+</body>
+</html>
