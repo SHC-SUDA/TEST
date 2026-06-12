@@ -317,12 +317,25 @@ tr:hover td{background:var(--bg)}
 .eg-rule-card{background:var(--surface);border:1px solid var(--border);border-left:4px solid var(--purple);border-radius:0 10px 10px 0;padding:14px 16px}
 .eg-rule-title{font-size:12px;font-weight:700;color:var(--text);margin-bottom:10px}
 .eg-rule-body{display:flex;flex-direction:column;gap:7px}
-.eg-rule-item{display:grid;grid-template-columns:72px 1fr;align-items:flex-start;gap:8px;font-size:11px;color:var(--text2);line-height:1.65}
-.eg-rule-label{flex-shrink:0;font-size:9px;font-weight:700;padding:2px 6px;border-radius:3px;background:var(--bg2);color:var(--text2);font-family:var(--mono);margin-top:1px;white-space:nowrap;text-align:center;display:block}
+.eg-rule-item{font-size:11px;color:var(--text2);line-height:1.75}
+.eg-rule-label{display:inline-block;font-size:9px;font-weight:700;padding:2px 6px;border-radius:3px;background:var(--bg2);color:var(--text2);font-family:var(--mono);margin-right:8px;vertical-align:baseline;white-space:nowrap;text-align:center}
 .eg-label-ok{background:#E1F5EE;color:#085041}
 .eg-label-warn{background:var(--amber-l);color:#633806}
 .eg-label-ng{background:var(--rust-l);color:#712B13}
 .eg-rule-note{font-size:10px;color:var(--text3);line-height:1.65;padding:6px 8px;background:var(--bg);border-radius:4px;margin-top:4px}
+
+/* 共通基準・カードヘッダー（インパクトある番号付きタイトル） */
+.eg-cmn-title{display:flex;align-items:center;gap:12px;margin-bottom:12px;padding-bottom:10px;border-bottom:1px solid var(--border)}
+.eg-cmn-num{font-family:var(--display);font-size:24px;font-weight:800;color:var(--purple);line-height:1;letter-spacing:-.02em;background:linear-gradient(135deg,var(--purple) 0%,#7B6FE0 100%);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;flex-shrink:0;min-width:42px}
+.eg-cmn-info{flex:1;min-width:0}
+.eg-cmn-jp{font-size:14px;font-weight:700;color:var(--text);line-height:1.3;margin-bottom:2px}
+.eg-cmn-en{font-size:9px;font-weight:700;color:var(--text3);letter-spacing:.12em;text-transform:uppercase;font-family:var(--mono)}
+.eg-cmn-icon{font-size:20px;flex-shrink:0}
+/* バリエーション色 */
+.eg-cmn-title.cmn-blue .eg-cmn-num{background:linear-gradient(135deg,var(--blue) 0%,#3B82F6 100%);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+.eg-cmn-title.cmn-rust .eg-cmn-num{background:linear-gradient(135deg,var(--rust) 0%,#C53030 100%);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+.eg-cmn-title.cmn-amber .eg-cmn-num{background:linear-gradient(135deg,#C77700 0%,#E8A020 100%);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+.eg-cmn-title.cmn-shc .eg-cmn-num{background:linear-gradient(135deg,#0E8A6F 0%,#10B981 100%);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
 
 .eg-formula{background:var(--bg);border-radius:6px;padding:10px 12px;font-family:var(--mono);font-size:11px}
 .eg-formula-row{display:flex;align-items:center;gap:8px;padding:2px 0;color:var(--text2)}
@@ -357,7 +370,6 @@ tr:hover td{background:var(--bg)}
 
 @media(max-width:700px){
   .eg-risk-grid{grid-template-columns:1fr}
-  .eg-rule-item{grid-template-columns:60px 1fr}
 }
 
 /* ===== YAKUSHOKU REDESIGN ===== */
@@ -415,10 +427,37 @@ tr:hover td{background:var(--bg)}
 .sh-note{font-size:10px;color:var(--text3);margin-top:4px;line-height:1.5}
 .sh-wip{position:absolute;top:10px;right:10px;font-size:9px;font-weight:700;background:var(--bg2);color:var(--text3);border-radius:3px;padding:2px 6px;font-family:var(--mono)}
 
+/* ===== HAMBURGER BUTTON ===== */
+.hamburger{
+  display:none;
+  align-items:center;justify-content:center;
+  width:36px;height:36px;border-radius:8px;
+  background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);
+  cursor:pointer;flex-shrink:0;transition:background var(--transition);
+  font-size:18px;color:#fff;user-select:none;
+}
+.hamburger:hover{background:rgba(255,255,255,.15)}
+
+/* ===== OVERLAY ===== */
+.sidebar-overlay{
+  display:none;position:fixed;inset:0;
+  background:rgba(0,0,0,.55);z-index:199;
+  backdrop-filter:blur(2px);
+}
+.sidebar-overlay.open{display:block}
+
 /* ===== RESPONSIVE ===== */
 @media(max-width:900px){
-  :root{--sidebar:0px}
-  .sidebar{display:none}
+  .hamburger{display:flex}
+  .sidebar{
+    position:fixed;left:0;top:var(--header-h);
+    height:calc(100vh - var(--header-h));
+    z-index:200;
+    transform:translateX(-100%);
+    transition:transform .25s ease;
+    width:240px!important;
+  }
+  .sidebar.open{transform:translateX(0)}
   .main{margin-left:0}
   .home-grid{grid-template-columns:repeat(2,1fr)}
   .tab-content{padding:20px 16px 48px}
@@ -434,6 +473,7 @@ tr:hover td{background:var(--bg)}
 
 <!-- HEADER -->
 <header class="site-header">
+  <div class="hamburger" id="hamburgerBtn" onclick="toggleSidebar()" title="メニュー">☰</div>
   <a class="logo" href="#" onclick="switchTab('home',null);return false">
     <div class="logo-mark">S</div>
     <div>
@@ -456,6 +496,9 @@ tr:hover td{background:var(--bg)}
 <!-- LAYOUT -->
 <div class="layout">
 
+<!-- SIDEBAR OVERLAY -->
+<div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
+
   <!-- SIDEBAR -->
   <aside class="sidebar">
     <nav>
@@ -470,12 +513,13 @@ tr:hover td{background:var(--bg)}
         <a class="nav-item" id="nav-shokiki" onclick="switchTab('shokiki',this);return false" href="#">
           <span class="nav-icon">📋</span>② 職域定義書
         </a>
+        <div class="nav-sub" id="sub-ga" onclick="switchTab('shokiki',null);scrollToAnchor('sk-ga')">└ 経営管理部</div>
         <div class="nav-sub" id="sub-ams" onclick="switchTab('shokiki',null);scrollToAnchor('sk-ams')">└ AMS事業部</div>
-        <div class="nav-sub" id="sub-cc" onclick="switchTab('shokiki',null);scrollToAnchor('sk-cc')">└ コールセンター</div>
+        <div class="nav-sub" id="sub-ams-koji" onclick="switchTab('shokiki',null);scrollToAnchor('sk-ams-koji')">└ 工事課</div>
+        <div class="nav-sub" id="sub-cc" onclick="switchTab('shokiki',null);scrollToAnchor('sk-cc')">└ コンタクトセンター事業部</div>
         <div class="nav-sub" id="sub-partner" onclick="switchTab('shokiki',null);scrollToAnchor('sk-partner')">└ パートナー事業部</div>
         <div class="nav-sub" id="sub-houjin" onclick="switchTab('shokiki',null);scrollToAnchor('sk-houjin')">└ 法人営業部</div>
         <div class="nav-sub" id="sub-ops" onclick="switchTab('shokiki',null);scrollToAnchor('sk-ops')">└ 業務管理部</div>
-        <div class="nav-sub" id="sub-ga" onclick="switchTab('shokiki',null);scrollToAnchor('sk-ga')">└ 経営管理部</div>
 
         <a class="nav-item" id="nav-yakushoku" onclick="switchTab('yakushoku',this);return false" href="#">
           <span class="nav-icon">🎖️</span>③ 役職定義書
@@ -494,6 +538,8 @@ tr:hover td{background:var(--bg)}
         <div class="nav-sub" onclick="switchTab('matrix',null);scrollToAnchor('mx-keiyaku')">└ 契約・取引</div>
         <div class="nav-sub" onclick="switchTab('matrix',null);scrollToAnchor('mx-jinji')">└ 人事・労務</div>
         <div class="nav-sub" onclick="switchTab('matrix',null);scrollToAnchor('mx-jikou')">└ 事故・トラブル</div>
+        <div class="nav-sub" onclick="switchTab('matrix',null);scrollToAnchor('mx-soumu')">└ 支払承認</div>
+        <div class="nav-sub" onclick="switchTab('matrix',null);scrollToAnchor('mx-fusai')">└ 債務支払・内部統制</div>
         <a class="nav-item" id="nav-shouko" onclick="switchTab('shouko',this);return false" href="#">
           <span class="nav-icon">📁</span>⑥ 報告・証跡管理
         </a>
@@ -612,7 +658,7 @@ tr:hover td{background:var(--bg)}
         </div>
         <div class="home-card c-cc" onclick="switchTab('shokiki',null);scrollToAnchor('sk-cc')">
           <div class="hc-icon">📞</div>
-          <div class="hc-name">コールセンター事業部</div>
+          <div class="hc-name">コンタクトセンター事業部</div>
           <div class="hc-mgr">部長：池田 祐介　次長：笠原 康平</div>
           <div class="hc-tags">
             <span class="hc-tag" style="background:var(--green-l);color:#085041">電話対応</span>
@@ -777,7 +823,7 @@ tr:hover td{background:var(--bg)}
           </div>
         </div>
         <div class="dept-col d-cc">
-          <div class="dept-head" onclick="showDetail('cc')"><div class="dept-nm">コールセンター<br>事業部</div><div class="dept-sb">新設・旧AMSより独立</div></div>
+          <div class="dept-head" onclick="showDetail('cc')"><div class="dept-nm">コンタクトセンター<br>事業部</div><div class="dept-sb">電話取次・生活サービス案内</div></div>
           <div class="mgr-block">
             <div class="mgr-row" onclick="showDetail('cc')"><span class="badge r-b">部長</span><div class="mgr-info"><span class="mgr-nm">池田 祐介</span></div></div>
             <div class="mgr-row" onclick="showDetail('cc')"><span class="badge r-j">次長</span><div class="mgr-info"><span class="mgr-nm">笠原 康平</span></div></div>
@@ -890,10 +936,10 @@ tr:hover td{background:var(--bg)}
           <thead><tr><th>業務フロー</th><th>起点部署</th><th>連携内容・依頼方法</th><th>受け手部署・担当</th><th>完了確認</th><th>備考</th></tr></thead>
           <tbody>
             <tr><td class="td-dept">防犯カメラ獲得〜請求</td><td>AMS事業部</td><td>受注情報・顧客情報を所定フォームで業務管理部管理者へ連携<br><small>※顧客情報の正確性はAMS管理者が責任を持って確認すること</small></td><td>業務管理部管理者<br>→一般社員へ指示</td><td>業務管理部管理者が請求開始を確認・報告</td><td>月額請求・未収対応は業務管理部が主担当</td></tr>
-            <tr><td class="td-dept">インターネット回線投入業務</td><td>パートナー事業部<br>コールセンター事業部</td><td>管理者承認済みの所定フォームで業務管理部管理者へ依頼<br><small>※投入前に管理者が内容を確認すること</small></td><td>業務管理部管理者<br>→一般社員へ指示</td><td>業務管理部管理者が投入完了を依頼元へ報告</td><td>不備発生時は業務管理部管理者から依頼元管理者へ連絡</td></tr>
+            <tr><td class="td-dept">インターネット回線投入業務</td><td>パートナー事業部<br>コンタクトセンター事業部</td><td>管理者承認済みの所定フォームで業務管理部管理者へ依頼<br><small>※投入前に管理者が内容を確認すること</small></td><td>業務管理部管理者<br>→一般社員へ指示</td><td>業務管理部管理者が投入完了を依頼元へ報告</td><td>不備発生時は業務管理部管理者から依頼元管理者へ連絡</td></tr>
             <tr><td class="td-dept">工事依頼</td><td>AMS事業部管理者</td><td>工事内容・日程・現場情報を工事課管理者へ連絡<br><small>他部署からの直接依頼は受け付けない</small></td><td>工事課管理者<br>→担当者へ指示</td><td>工事課管理者が完工報告をAMSへ</td><td>工事完了後の検収はAMS管理者が実施</td></tr>
             <tr><td class="td-dept">KPI報告</td><td>各部署管理者</td><td>部下・業務管理部に依頼した資料は管理者が内容を確認・検証してから社長へ提出<br><small>未確認のまま提出することは禁止</small></td><td>社長</td><td>社長が報告内容を確認・承認</td><td>報告資料には作成者・確認者（管理者）・提出日を明記すること</td></tr>
-            <tr><td class="td-dept">未収対応</td><td>業務管理部</td><td>未収発生を確認後、業務管理部管理者から該当案件の獲得部署管理者へ報告・連携依頼</td><td>AMS・パートナー・<br>コールセンター各管理者</td><td>解決後に業務管理部管理者へ報告</td><td>未収一覧は月次で社長へ業務管理部管理者が報告</td></tr>
+            <tr><td class="td-dept">未収対応</td><td>業務管理部</td><td>未収発生を確認後、業務管理部管理者から該当案件の獲得部署管理者へ報告・連携依頼</td><td>AMS・パートナー・<br>コンタクトセンター各管理者</td><td>解決後に業務管理部管理者へ報告</td><td>未収一覧は月次で社長へ業務管理部管理者が報告</td></tr>
           </tbody>
         </table>
       </div>
@@ -999,6 +1045,28 @@ tr:hover td{background:var(--bg)}
       <div class="page-desc">顧客への提供価格設定と代理店・紹介店への支払手数料設定に関する管理者判断基準を定めます。基準内は管理者決裁OK、基準外は社長決裁が必要です。</div>
       <div class="notice"><div class="notice-icon">⚠️</div><div>本ルールはたたき台です。リスクモンスターの年間取引額基準は別途追記予定。経営管理部・社長との合意後に正式版として制定してください。</div></div>
 
+      <!-- 管理者責任の注意喚起（最重要） -->
+      <div class="eg-rule-card" style="border-left-color:var(--rust);background:linear-gradient(135deg,#FFF9F7 0%,#FFFFFF 100%);margin:14px 0 18px">
+        <div class="eg-cmn-title cmn-rust" style="border-bottom:none;padding-bottom:0;margin-bottom:10px">
+          <div class="eg-cmn-icon">⚖️</div>
+          <div class="eg-cmn-info">
+            <div class="eg-cmn-jp">管理者への要求事項と責任</div>
+            <div class="eg-cmn-en">RESPONSIBILITY OF MANAGERS</div>
+          </div>
+        </div>
+        <div style="font-size:11px;color:var(--text2);line-height:1.75;margin-bottom:10px">
+          本ルールに基づく価格・手数料の決裁権限は、会社から管理者へ<strong>委託された重大な責任</strong>です。管理者は本ページ全体のルールを正しく理解し、誠実かつ透明性をもって行動すること。
+        </div>
+        <div style="background:rgba(15,26,48,.06);border-radius:6px;padding:10px 12px;margin-bottom:8px;font-size:11px;color:var(--text2);line-height:1.75">
+          <div style="font-size:10px;font-weight:700;color:var(--text3);margin-bottom:4px">【判断基準の逸脱】</div>
+          管理職としての適性を改めて確認させていただき、場合によっては<strong>職務権限の見直し・役割変更を検討することがある。</strong>
+        </div>
+        <div style="background:rgba(153,60,29,.08);border:1px solid rgba(153,60,29,.2);border-radius:6px;padding:10px 12px;font-size:11px;color:var(--text2);line-height:1.75">
+          <div style="font-size:10px;font-weight:700;color:var(--rust);margin-bottom:4px">【規定・コンプライアンス違反】</div>
+          人事上の処分にとどまらず、<strong>法的措置を含む厳正な対応を行う場合がある。</strong>
+        </div>
+      </div>
+
       <div class="anchor-nav">
         <button class="anchor-btn" onclick="scrollToAnchor('eg-common')">⚖️ 共通判断基準</button>
         <button class="anchor-btn" onclick="scrollToAnchor('eg-price')">🏷️ 提供価格設定</button>
@@ -1013,48 +1081,106 @@ tr:hover td{background:var(--bg)}
       ══════════════════════════════════════ -->
       <div class="sec-head" id="eg-common"><div class="sec-dot" style="background:var(--navy)"></div>⚖️ 共通判断基準（提供価格・支払手数料 両方に適用）</div>
 
-      <!-- 共通①PL -->
-      <div class="eg-rule-card" style="border-left-color:var(--blue);margin-bottom:10px">
-        <div class="eg-rule-title">📊 共通① PL・予実達成の観点</div>
+      <!-- 共通① SHC経営理念（最上位の判断軸） -->
+      <div class="eg-rule-card" style="border-left-color:#0E8A6F;margin-bottom:10px;background:linear-gradient(135deg,#F0FBF7 0%,#FFFFFF 60%)">
+        <div class="eg-cmn-title cmn-shc">
+          <div class="eg-cmn-num">01</div>
+          <div class="eg-cmn-icon">💎</div>
+          <div class="eg-cmn-info">
+            <div class="eg-cmn-jp">SHC 経営理念</div>
+            <div class="eg-cmn-en">SHC PHILOSOPHY</div>
+          </div>
+        </div>
         <div class="eg-rule-body">
-          <div class="eg-rule-item"><span class="eg-rule-label">基本</span>当月・当四半期の予算達成状況を前提に判断すること。管理者は常に部門のPL状況を把握したうえで意思決定する。</div>
-          <div class="eg-rule-item"><span class="eg-rule-label eg-label-warn">未達局面</span>値引き・手数料上乗せの基準を厳格化。例外承認のハードルを上げる。</div>
-          <div class="eg-rule-item"><span class="eg-rule-label eg-label-ok">達成・超過局面</span>管理者裁量幅を広げ、戦略的な投資判断を認める。</div>
+          <!-- 経営理念・ビジョン -->
+          <div style="background:#0E8A6F;border-radius:8px;padding:14px 16px;margin-bottom:12px;color:#fff">
+            <div style="font-size:10px;font-weight:700;color:#A5E8D2;margin-bottom:6px;letter-spacing:.08em">SHC 経営理念</div>
+            <div style="font-size:13px;font-weight:700;line-height:1.7;margin-bottom:10px">
+              私たちは、高付加価値の創造・提供を通じて<br>
+              <strong style="font-size:14px">お客様満足と豊かな社会の発展に貢献します</strong>
+            </div>
+            <div style="font-size:10px;font-weight:700;color:#A5E8D2;margin-bottom:4px;letter-spacing:.08em;padding-top:8px;border-top:1px solid rgba(255,255,255,.15)">VISION</div>
+            <div style="font-size:12px;font-weight:600;line-height:1.7">
+              SHCは<strong>独自の価値創造</strong>で、世の中で<strong>在りそうで無い企業体</strong>を目指します
+            </div>
+          </div>
+
+          <!-- 価値の好循環モデル（SVGサイクル図） -->
+          <div style="background:#FFFFFF;border:1px solid var(--border);border-radius:8px;padding:14px 12px 10px;margin-bottom:12px">
+            <div style="font-size:10px;font-weight:700;color:#0E8A6F;margin-bottom:10px;letter-spacing:.08em;text-align:center">VALUE CIRCULATION ／ 価値の好循環モデル</div>
+            <svg viewBox="0 0 360 290" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:360px;height:auto;display:block;margin:0 auto" aria-label="価値の好循環サイクル">
+              <defs>
+                <marker id="cyc-arrow" markerWidth="10" markerHeight="10" refX="7" refY="3.5" orient="auto">
+                  <path d="M0,0 L0,7 L8,3.5 Z" fill="#0E8A6F"/>
+                </marker>
+                <linearGradient id="cyc-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" stop-color="#10B981"/>
+                  <stop offset="100%" stop-color="#0E8A6F"/>
+                </linearGradient>
+              </defs>
+
+              <!-- 中央円 -->
+              <circle cx="180" cy="145" r="38" fill="url(#cyc-grad)"/>
+              <text x="180" y="141" text-anchor="middle" fill="#fff" font-size="11" font-weight="800">好循環</text>
+              <text x="180" y="156" text-anchor="middle" fill="#A5E8D2" font-size="8" font-weight="700" letter-spacing="1">CYCLE</text>
+
+              <!-- 上：SHCが創る価値 -->
+              <g>
+                <rect x="118" y="14" width="124" height="48" rx="24" fill="#0E8A6F"/>
+                <text x="180" y="35" text-anchor="middle" fill="#A5E8D2" font-size="8" font-weight="700" letter-spacing="1">①</text>
+                <text x="180" y="50" text-anchor="middle" fill="#fff" font-size="12" font-weight="800">SHCが創る価値</text>
+              </g>
+
+              <!-- 右：お客様満足 -->
+              <g>
+                <rect x="240" y="118" width="110" height="54" rx="24" fill="#10B981"/>
+                <text x="295" y="139" text-anchor="middle" fill="#D9F5E9" font-size="8" font-weight="700" letter-spacing="1">②</text>
+                <text x="295" y="156" text-anchor="middle" fill="#fff" font-size="12" font-weight="800">お客様満足</text>
+              </g>
+
+              <!-- 下：社員の笑顔と誇り -->
+              <g>
+                <rect x="106" y="228" width="148" height="48" rx="24" fill="#10B981"/>
+                <text x="180" y="249" text-anchor="middle" fill="#D9F5E9" font-size="8" font-weight="700" letter-spacing="1">③</text>
+                <text x="180" y="264" text-anchor="middle" fill="#fff" font-size="12" font-weight="800">社員の笑顔と誇り</text>
+              </g>
+
+              <!-- 左：利益 -->
+              <g>
+                <rect x="10" y="118" width="100" height="54" rx="24" fill="#0E8A6F"/>
+                <text x="60" y="139" text-anchor="middle" fill="#A5E8D2" font-size="8" font-weight="700" letter-spacing="1">④</text>
+                <text x="60" y="156" text-anchor="middle" fill="#fff" font-size="12" font-weight="800">利益</text>
+              </g>
+
+              <!-- 矢印（時計回り：①→②→③→④→①） -->
+              <!-- ①→② 右上カーブ -->
+              <path d="M 232,55 Q 280,70 290,115" stroke="#0E8A6F" stroke-width="2.5" fill="none" marker-end="url(#cyc-arrow)"/>
+              <!-- ②→③ 右下カーブ -->
+              <path d="M 290,175 Q 280,225 245,235" stroke="#0E8A6F" stroke-width="2.5" fill="none" marker-end="url(#cyc-arrow)"/>
+              <!-- ③→④ 左下カーブ -->
+              <path d="M 113,235 Q 75,225 65,175" stroke="#0E8A6F" stroke-width="2.5" fill="none" marker-end="url(#cyc-arrow)"/>
+              <!-- ④→① 左上カーブ -->
+              <path d="M 65,115 Q 75,70 115,55" stroke="#0E8A6F" stroke-width="2.5" fill="none" marker-end="url(#cyc-arrow)"/>
+            </svg>
+            <div style="font-size:10px;color:var(--text3);text-align:center;margin-top:6px;line-height:1.5">SHCが創る価値が、お客様満足→社員の笑顔と誇り→利益と循環し、再びSHCの価値創造に還流する</div>
+          </div>
+
+          <!-- 値決め判断における具体的な視点 -->
+          <div class="eg-rule-item"><span class="eg-rule-label">適正価格</span>市場相場・競合状況を踏まえた<strong>適正価格の調査・認識</strong>を行ったうえで、価格・手数料の設定を行うこと</div>
+          <div class="eg-rule-item"><span class="eg-rule-label">提供価値</span>SHCとして<strong>金銭だけでない利益</strong>（対応力・総合提案・関係値・安心感等）をお客様に提供できているかを常にチェックすること</div>
         </div>
       </div>
 
-      <!-- 共通②リスクモンスター -->
-      <div class="eg-rule-card" style="border-left-color:var(--rust);margin-bottom:10px">
-        <div class="eg-rule-title">🔍 共通② リスクモンスター判定（条件付き必須）</div>
-        <div class="eg-rule-body">
-          <div class="eg-rule-item"><span class="eg-rule-label eg-label-ok">任意（推奨）</span>ネット無料・防犯カメラ等の一般サービス提供は必須ではないが、取引額に応じた<strong>回収リスクの考慮・判断は常に行うこと</strong></div>
-          <div class="eg-rule-item"><span class="eg-rule-label eg-label-ng">必須</span>複数棟契約・管理会社での回収代行・卸など<strong>取引金額が大きくなるケース</strong>はリスクモンスター判定を必ず取得すること</div>
-        </div>
-        <div style="display:flex;gap:8px;margin-top:10px">
-          <div class="eg-risk-card eg-risk-safe" style="flex:1;padding:10px 13px">
-            <div class="eg-risk-badge">A〜D 判定</div>
-            <div class="eg-risk-label" style="font-size:12px">安全圏</div>
-            <div class="eg-risk-desc" style="font-size:11px">標準の採算基準を適用。管理者の判断で進めてよい。</div>
-          </div>
-          <div class="eg-risk-card eg-risk-danger" style="flex:1;padding:10px 13px">
-            <div class="eg-risk-badge">E・F 判定</div>
-            <div class="eg-risk-label" style="font-size:12px">要注意・高リスク</div>
-            <div class="eg-risk-rule-box">
-              <div class="eg-risk-rule-item">手数料の<strong>10%以上</strong>を当社利益として確保必須</div>
-              <div class="eg-risk-rule-item">10%を下回る場合 → <strong>社長決裁必須</strong></div>
-            </div>
-            <div class="eg-risk-alt">
-              <div class="eg-risk-alt-title">📌 代替策</div>
-              <div class="eg-risk-alt-desc">保証金回収も可。ただし<strong>経営管理部・親会社への相談・承認が必須</strong>。</div>
-            </div>
-          </div>
-        </div>
-        <div class="eg-rule-note" style="margin-top:8px">リスクモンスターの年間取引額ごとの詳細基準は別途追記予定。経営管理部（伊藤部長）へ確認のこと。</div>
-      </div>
-
-      <!-- 共通③戦略性・経済合理性 -->
+      <!-- 共通② LOMグループ基準 -->
       <div class="eg-rule-card" style="border-left-color:var(--purple);margin-bottom:10px">
-        <div class="eg-rule-title">🎯 共通③ 戦略性・経済合理性の判断（LOMグループ基準）</div>
+        <div class="eg-cmn-title">
+          <div class="eg-cmn-num">02</div>
+          <div class="eg-cmn-icon">🎯</div>
+          <div class="eg-cmn-info">
+            <div class="eg-cmn-jp">戦略性・経済合理性の判断（LOMグループ基準）</div>
+            <div class="eg-cmn-en">LOM GROUP ECONOMIC RATIONALITY</div>
+          </div>
+        </div>
         <div class="eg-rule-body">
           <div style="background:var(--navy);border-radius:8px;padding:12px 16px;margin-bottom:10px">
             <div style="font-size:10px;font-weight:700;color:#AFA9EC;margin-bottom:6px;letter-spacing:.06em">LOMグループ（ラストワンマイル）が掲げる経済合理性の基準</div>
@@ -1070,9 +1196,89 @@ tr:hover td{background:var(--bg)}
         </div>
       </div>
 
-      <!-- 共通④利益相反 -->
+      <!-- 共通③ PL・予実達成（簡略化） -->
+      <div class="eg-rule-card" style="border-left-color:var(--blue);margin-bottom:10px">
+        <div class="eg-cmn-title cmn-blue">
+          <div class="eg-cmn-num">03</div>
+          <div class="eg-cmn-icon">📊</div>
+          <div class="eg-cmn-info">
+            <div class="eg-cmn-jp">PL・予実達成の観点</div>
+            <div class="eg-cmn-en">BUDGET &amp; PERFORMANCE</div>
+          </div>
+        </div>
+        <div class="eg-rule-body">
+          <div class="eg-rule-item"><span class="eg-rule-label">基本</span><strong>当期の予算</strong>を前提に判断すること。管理者は常に部門の当期PL状況を把握したうえで意思決定する。</div>
+        </div>
+      </div>
+
+      <!-- 共通④ 金銭的リスク -->
+      <div class="eg-rule-card" style="border-left-color:var(--rust);margin-bottom:10px">
+        <div class="eg-cmn-title cmn-rust">
+          <div class="eg-cmn-num">04</div>
+          <div class="eg-cmn-icon">💰</div>
+          <div class="eg-cmn-info">
+            <div class="eg-cmn-jp">金銭的リスクの考慮</div>
+            <div class="eg-cmn-en">FINANCIAL RISK ASSESSMENT</div>
+          </div>
+        </div>
+        <div class="eg-rule-body">
+          <div class="eg-rule-item"><span class="eg-rule-label">基本姿勢</span>取引の構造（誰から・誰経由で・いつ入金されるか）を常に確認し、<strong>未収・回収不能リスクを必ず思案する</strong>こと</div>
+          <div class="eg-rule-item"><span class="eg-rule-label">自社サービス</span>月額回収の場合は<strong>月額の未収リスク</strong>を考慮（解約・支払遅延・口座エラー等）</div>
+          <div class="eg-rule-item"><span class="eg-rule-label">卸・仕入あり</span>当社が卸・仕入として介在する場合は、<strong>仕入先への支払義務と顧客からの回収のタイムラグ・回収不能リスク</strong>も併せて考慮</div>
+          <div class="eg-rule-item"><span class="eg-rule-label">代理店手数料</span>代理店への手数料支払いの場合は<strong>戻入未収リスク</strong>（顧客解約後の代理店からの戻し回収不能）を考慮</div>
+          <div class="eg-rule-note" style="background:var(--amber-l);border-left:3px solid var(--amber);margin-top:8px">
+            <strong>📌 具体例：AMS事業のオーナー向けサービス（管理会社代行回収）</strong><br>
+            オーナーが管理会社に支払っていても、<strong>管理会社が当社に支払わない・支払えないリスク</strong>が発生する。「顧客は支払っている」では済まされない、回収経路全体のリスクを管理者が思案すること。
+          </div>
+        </div>
+
+        <!-- リスクモンスター判定（金銭的リスク評価ツール） -->
+        <div style="margin-top:14px;padding-top:14px;border-top:1px dashed var(--border)">
+          <div style="font-size:12px;font-weight:700;color:var(--text);margin-bottom:8px">🔍 リスクモンスター判定の活用（金銭的リスク評価ツール）</div>
+          <div class="eg-rule-body" style="margin-bottom:10px">
+            <div class="eg-rule-item"><span class="eg-rule-label eg-label-ok">基本不要</span>マンションオーナー様・個人ユーザー様に関しては<strong>リスクモンスター判定（取引先申請）は基本不要</strong>。ただし取引額に応じた<strong>回収リスクの考慮・判断は常に行うこと</strong></div>
+            <div class="eg-rule-item"><span class="eg-rule-label eg-label-ng">必須</span>法人・管理会社等との取引で、<strong>複数棟契約・回収代行・卸など取引金額が大きくなるケース</strong>はリスクモンスター判定を必ず取得すること</div>
+          </div>
+
+          <!-- LOMが定めた取引額基準と注意喚起義務 -->
+          <div style="background:var(--amber-l);border:1px solid #E8A020;border-radius:8px;padding:12px 14px;margin-bottom:8px">
+            <div style="font-size:11px;font-weight:700;color:#633806;margin-bottom:6px;display:flex;align-items:center;gap:6px">
+              <span style="font-size:13px">⚠️</span>A〜G判定 共通の管理者注意喚起義務
+            </div>
+            <div style="font-size:11px;color:#633806;line-height:1.75">
+              リスクモンスター判定（A〜G）に対して<strong>LOMが定めた取引額の目安を大幅に超過する可能性がある場合</strong>は、取引内容に応じて管理者が<strong>注意喚起義務</strong>を負い、所定の管理・対処を行うこと。
+            </div>
+            <div class="eg-rule-note" style="margin-top:6px;background:rgba(255,255,255,.5)">LOMが定める取引額の詳細基準は別途追記予定。経営管理部（伊藤部長）へ確認のこと。</div>
+          </div>
+
+          <!-- 管理者が考えるリスク軽減策 -->
+          <div style="background:var(--bg);border:1px dashed var(--border);border-radius:8px;padding:12px 14px">
+            <div style="font-size:11px;font-weight:700;color:var(--text);margin-bottom:6px">💡 リスク軽減策の考え方（管理者の裁量）</div>
+            <div style="font-size:11px;color:var(--text2);line-height:1.75;margin-bottom:8px">
+              リスクをどのように軽減するかは<strong>管理者が取引内容に応じて考えること</strong>。下記はあくまで一例。必要に応じて<strong>社長相談を行うこと</strong>。
+            </div>
+            <div style="font-size:10px;color:var(--text3);margin-bottom:4px;font-weight:700;letter-spacing:.06em">代替策例（参考）</div>
+            <div style="display:flex;flex-direction:column;gap:4px;font-size:11px;color:var(--text2);line-height:1.6">
+              <div>・ 保証金の設定・受領</div>
+              <div>・ 取引額の上限設定・段階的拡大</div>
+              <div>・ 前払い・短期サイトでの精算</div>
+              <div>・ 与信枠の見直し・保険等の活用</div>
+              <div>・ その他、取引内容に応じた管理者判断による対処</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 共通⑤ 利益相反 -->
       <div class="eg-rule-card" style="border-left-color:var(--amber);margin-bottom:10px">
-        <div class="eg-rule-title">⚠️ 共通④ 利益相反の防止（価格設定・手数料設定 両方に適用）</div>
+        <div class="eg-cmn-title cmn-amber">
+          <div class="eg-cmn-num">05</div>
+          <div class="eg-cmn-icon">⚠️</div>
+          <div class="eg-cmn-info">
+            <div class="eg-cmn-jp">利益相反の防止</div>
+            <div class="eg-cmn-en">CONFLICT OF INTEREST</div>
+          </div>
+        </div>
         <div class="eg-rule-body">
           <div class="eg-rule-item"><span class="eg-rule-label eg-label-ng">申告義務</span>管理者が個人的な関係・利益のある相手との価格交渉・手数料設定を行う場合は、<strong>事前に社長へ申告する義務</strong>を負う</div>
           <div class="eg-rule-item"><span class="eg-rule-label eg-label-warn">準用</span>「有利な条件を意図的に特定先に提供する」「市場相場から著しく乖離した条件設定」も利益相反に準じて扱う</div>
@@ -1117,54 +1323,41 @@ tr:hover td{background:var(--bg)}
       ══════════════════════════════════════ -->
       <div class="sec-head" id="eg-tesuryo"><div class="sec-dot" style="background:var(--amber)"></div>💰 支払手数料設定（代理店・紹介店への支払）</div>
 
-      <div class="eg-rule-grid" style="margin-bottom:10px">
-        <div class="eg-rule-card" style="border-left-color:var(--amber)">
-          <div class="eg-rule-title">📐 6ヶ月ルール（基本原則）</div>
-          <div class="eg-rule-body">
-            <div class="eg-formula">
-              <div class="eg-formula-row"><span class="eg-formula-label">想定月次ストック粗利 = 月額売上 − 実質回収費用 − 諸経費</span></div>
-              <div class="eg-formula-divider"></div>
-              <div class="eg-formula-row eg-formula-result"><span class="eg-formula-op">=</span><span class="eg-formula-label"><strong>上限手数料 = 想定月次ストック粗利 × 6ヶ月</strong></span></div>
-            </div>
-            <div style="display:flex;gap:8px;margin-top:10px">
-              <div class="eg-judge-ok">支払手数料 ≦ 上限<br>→ <strong>管理者OK</strong></div>
-              <div class="eg-judge-ng">支払手数料 ＞ 上限<br>→ <strong>社長決裁</strong></div>
-            </div>
-            <div class="eg-rule-note" style="margin-top:8px">金額の大小ではなく6ヶ月ルールが絶対基準。少額でも上限超過の場合は社長決裁が必要。</div>
+      <div class="eg-rule-card" style="border-left-color:var(--amber);margin-bottom:10px">
+        <div class="eg-rule-title">📐 6ヶ月ルール（基本原則）</div>
+        <div class="eg-rule-body">
+          <div class="eg-formula">
+            <div class="eg-formula-row"><span class="eg-formula-label">想定月次ストック粗利 = 月額売上 − 実質回収費用 − 諸経費</span></div>
+            <div class="eg-formula-divider"></div>
+            <div class="eg-formula-row eg-formula-result"><span class="eg-formula-op">=</span><span class="eg-formula-label"><strong>上限手数料 = 想定月次ストック粗利 × 6ヶ月</strong></span></div>
           </div>
-        </div>
-        <div class="eg-rule-card" style="border-left-color:var(--rust)">
-          <div class="eg-rule-title">⚖️ 2段階　管理者への要求事項と責任</div>
-          <div class="eg-rule-body">
-            <div style="background:rgba(15,26,48,.06);border-radius:6px;padding:10px 12px;margin-bottom:8px;font-size:11px;color:var(--text2);line-height:1.75">
-              <div style="font-size:10px;font-weight:700;color:var(--text3);margin-bottom:4px">【判断基準の逸脱】</div>
-              管理職としての適性を改めて確認させていただき、場合によっては<strong>職務権限の見直し・役割変更を検討することがある。</strong>
-            </div>
-            <div style="background:rgba(153,60,29,.08);border:1px solid rgba(153,60,29,.2);border-radius:6px;padding:10px 12px;font-size:11px;color:var(--text2);line-height:1.75">
-              <div style="font-size:10px;font-weight:700;color:var(--rust);margin-bottom:4px">【規定・コンプライアンス違反】</div>
-              人事上の処分にとどまらず、<strong>法的措置を含む厳正な対応を行う場合がある。</strong>管理者はこの権限が会社から委託された重大な責任であることを認識し、誠実かつ透明性をもって行動すること。
-            </div>
+          <div style="display:flex;gap:8px;margin-top:10px">
+            <div class="eg-judge-ok">支払手数料 ≦ 上限<br>→ <strong>管理者OK</strong></div>
+            <div class="eg-judge-ng">支払手数料 ＞ 上限<br>→ <strong>社長決裁</strong></div>
           </div>
+          <div class="eg-rule-note" style="margin-top:8px">金額の大小ではなく6ヶ月ルールが絶対基準。少額でも上限超過の場合は社長決裁が必要。</div>
         </div>
       </div>
 
       <!-- 戻入・80%ルール -->
       <div class="sec-head" id="eg-modoshi"><div class="sec-dot" style="background:var(--green)"></div>🔄 戻入条件・80%ルール</div>
-      <div class="eg-rule-grid">
-        <div class="eg-rule-card" style="border-left-color:var(--green)">
-          <div class="eg-rule-title">🔄 戻入条件の付帯ルール</div>
-          <div class="eg-rule-body">
-            <div class="eg-rule-item"><span class="eg-rule-label">原則</span>上位店から戻入設定がある場合、代理店にも<strong>同条件の戻入を必須付帯</strong></div>
-            <div class="eg-rule-item"><span class="eg-rule-label eg-label-ok">例外</span>アライアンス（不動産等の紹介販路）は戻入条件の付帯を任意とする</div>
-          </div>
+      <div class="eg-rule-card" style="border-left-color:var(--green);margin-bottom:14px">
+        <!-- 戻入条件の付帯原則 -->
+        <div class="eg-rule-title">🔄 戻入条件の付帯ルール</div>
+        <div class="eg-rule-body" style="margin-bottom:14px">
+          <div class="eg-rule-item"><span class="eg-rule-label">代理店</span>上位店から戻入設定がある場合、代理店にも<strong>同条件の戻入を必須付帯</strong></div>
+          <div class="eg-rule-item"><span class="eg-rule-label eg-label-ok">アライアンス（紹介店）</span>基本は戻入条件なしでOK。ただし<strong>80%ルール該当時は代理店と同じ取扱い</strong>とし戻入条件を付帯すること</div>
+          <div class="eg-rule-note" style="margin-top:6px">⚠️ 代理店からの未回収リスクを踏まえ、取引額とリスクモンスター判定に相当な乖離がある場合は<strong>別途保証金等の設定を検討</strong>すること（経営管理部に相談）</div>
         </div>
-        <div class="eg-rule-card" style="border-left-color:var(--blue)">
-          <div class="eg-rule-title">📏 80%ルール（代理店 vs アライアンスの判定）</div>
-          <div class="eg-rule-body">
-            <div class="eg-rule-item"><span class="eg-rule-label eg-label-warn">代理店とみなす</span>当社入金手数料に対する支払手数料が<strong>80%超</strong>の場合</div>
-            <div class="eg-rule-item"><span class="eg-rule-label eg-label-ok">アライアンス扱い</span>当社入金手数料に対する支払手数料が<strong>80%以下</strong>の場合</div>
-            <div class="eg-rule-note">代理店とみなした場合、戻入条件がある案件は紹介店・アライアンスであっても<strong>戻入条件の付帯が必須</strong></div>
-          </div>
+
+        <!-- 区切り -->
+        <div style="border-top:1px solid var(--border);margin-bottom:12px"></div>
+
+        <!-- 80%ルール判定 -->
+        <div class="eg-rule-title">📏 80%ルール（代理店 / アライアンスの区分判定）</div>
+        <div class="eg-rule-body">
+          <div class="eg-rule-item"><span class="eg-rule-label eg-label-warn">代理店とみなす</span>当社入金手数料に対する支払手数料が<strong>80%超</strong>の場合 → 戻入条件の付帯が必須</div>
+          <div class="eg-rule-item"><span class="eg-rule-label eg-label-ok">アライアンス扱い</span>当社入金手数料に対する支払手数料が<strong>80%以下</strong>の場合 → 戻入条件は不要</div>
         </div>
       </div>
 
@@ -1174,15 +1367,15 @@ tr:hover td{background:var(--bg)}
         <div class="eg-rule-card" style="border-left-color:var(--green)">
           <div class="eg-rule-title">✅ 支払OK（管理者判断）</div>
           <div class="eg-rule-body">
-            <div class="eg-rule-item"><span class="eg-rule-label eg-label-ok">条件①</span>紹介・取次された<strong>該当顧客分の手数料入金が確認</strong>された後</div>
-            <div class="eg-rule-item"><span class="eg-rule-label eg-label-ok">条件②</span>自社サービス（月額請求）の<strong>初回請求分の入金が確認</strong>された後</div>
+            <div class="eg-rule-item"><span class="eg-rule-label eg-label-ok" style="white-space:nowrap">条件①</span><span>紹介・取次された該当顧客分の<strong>手数料入金が確認</strong>された後</span></div>
+            <div class="eg-rule-item"><span class="eg-rule-label eg-label-ok" style="white-space:nowrap">条件②</span><span>自社サービス（月額請求）の<strong>初回請求分の入金が確認</strong>された後</span></div>
           </div>
         </div>
         <div class="eg-rule-card" style="border-left-color:var(--rust)">
           <div class="eg-rule-title">⚠️ 社長決裁が必要なケース</div>
           <div class="eg-rule-body">
-            <div class="eg-rule-item"><span class="eg-rule-label eg-label-ng">禁止</span>上記①②の<strong>入金確認前に支払いを行う場合</strong>は社長決裁必須</div>
-            <div class="eg-rule-item"><span class="eg-rule-label">申請要件</span>理由・金額・回収見込みを明示したうえで社長へ申請すること</div>
+            <div class="eg-rule-item"><span class="eg-rule-label eg-label-ng" style="white-space:nowrap">禁止</span><span>上記①②の<strong>入金確認前に支払いを行う場合</strong>は社長決裁必須</span></div>
+            <div class="eg-rule-item"><span class="eg-rule-label" style="white-space:nowrap">申請要件</span><span>理由・金額・回収見込みを明示したうえで社長へ申請すること</span></div>
           </div>
         </div>
       </div>
@@ -1195,7 +1388,7 @@ tr:hover td{background:var(--bg)}
           <tbody>
             <tr><td class="td-dept">提供価格</td><td>採算基準（実質粗利）を下回る条件設定</td><td>採算根拠・長期PL見込みを明示</td></tr>
             <tr><td class="td-dept">支払手数料</td><td>ストック粗利6ヶ月を超える手数料支払い</td><td>投資回収計画・根拠を明示</td></tr>
-            <tr><td class="td-dept">支払手数料</td><td>E・F判定先への10%未満利益での取引</td><td>リスク対応策・担保内容を明示</td></tr>
+            <tr><td class="td-dept">金銭的リスク</td><td>LOMが定めた取引額目安を大幅超過する取引（管理者判断で軽減策が困難な場合）</td><td>取引内容・想定リスク・管理者が検討したリスク軽減策を明示</td></tr>
             <tr><td class="td-dept">支払タイミング</td><td>入金確認前の手数料前払い</td><td>理由・金額・回収見込みを明示</td></tr>
             <tr><td class="td-dept">共通</td><td>利益相反が疑われる取引・条件設定</td><td>関係性・条件の合理性を申告</td></tr>
           </tbody>
@@ -1250,37 +1443,52 @@ tr:hover td{background:var(--bg)}
       <!-- 新規取引承認フロー -->
       <div class="sec-head" id="si-flow"><div class="sec-dot" style="background:var(--purple)"></div>🔀 New商材・上位店追加時の承認フロー</div>
       <div class="eg-rule-grid" style="margin-bottom:14px">
+
+        <!-- 新規取引先 -->
         <div class="eg-rule-card" style="border-left-color:var(--green)">
-          <div class="eg-rule-title">✅ 新規取引先（既存ルールを踏襲）</div>
+          <div class="eg-rule-title">✅ 新規取引先</div>
           <div class="eg-rule-body">
-            <div class="eg-rule-item"><span class="eg-rule-label">Step 1</span>与信チェック（リスクモンスター）を取得</div>
-            <div class="eg-rule-item"><span class="eg-rule-label">Step 2</span>取引先申請（<strong>LARKワークフロー</strong>）を起案</div>
-            <div class="eg-rule-item"><span class="eg-rule-label">Step 3</span>経営管理部・社長決裁</div>
-            <div class="eg-rule-item"><span class="eg-rule-label">Step 4</span>LARK BASEに取引開始記録を登録・関連管理者へ自動通知</div>
+            <div class="eg-rule-item"><span class="eg-rule-label">申請</span>取引先申請（<strong>LARKワークフロー</strong>）を起案<br><small style="color:var(--text3)">取引想定額・商材・取引形態等の必要情報を入力</small></div>
+            <div class="eg-rule-item"><span class="eg-rule-label">与信審査</span>LOM法務にて与信実施<br><small style="color:var(--text3)">リスクモンスター判定・反社チェック等</small></div>
+            <div class="eg-rule-item"><span class="eg-rule-label eg-label-ok">承認</span>LOM法務から「承認」→ <strong>取引開始可能</strong><br><small style="color:var(--text3)">LARK BASEに取引開始記録を登録・関連管理者へ自動通知</small></div>
+            <div class="eg-rule-item"><span class="eg-rule-label eg-label-ng">否認</span>NG判定（社長決裁）の場合 → <strong>稟議書（LARKワークフロー）</strong>にて申請要</div>
           </div>
         </div>
+
+        <!-- 既存取引先の追加商材 -->
         <div class="eg-rule-card" style="border-left-color:var(--amber)">
-          <div class="eg-rule-title">⚠️ 既存取引先の追加商材（今回新設ルール）</div>
+          <div class="eg-rule-title">📦 既存取引先への追加商材</div>
           <div class="eg-rule-body">
-            <div class="eg-rule-item"><span class="eg-rule-label eg-label-ok">軽微な追加</span>同系統商材・条件変化なし → <strong>管理者承認のみ</strong>・LARK BASEに記録</div>
-            <div class="eg-rule-item"><span class="eg-rule-label eg-label-warn">新商材・条件変更あり</span>管理者起案 → <strong>経営管理部・社長決裁</strong> → LARK BASE記録・自動通知</div>
-            <div class="eg-rule-note">現状はワークフローが存在しないため、本ルールを基本として社内申請の整備を図ること</div>
+            <div class="eg-rule-item"><span class="eg-rule-label eg-label-ok">軽微な追加</span>下記セルフ判定内であれば<strong>事業部責任者にて決裁可能</strong><br><small style="color:var(--text3)">商材一覧BASEへの登録・関連事業部管理者への共有必須</small></div>
+            <div class="eg-rule-item"><span class="eg-rule-label eg-label-warn">判定該当あり</span>セルフ判定で1つでも該当する場合 → <strong>稟議書（LARKワークフロー）</strong>を提出</div>
           </div>
         </div>
       </div>
 
       <!-- 商材リスク判定フロー -->
       <div class="card" style="margin-bottom:14px">
-        <div class="card-title"><div class="dot" style="background:var(--rust)"></div>新商材取り扱い時のリスク判定フロー</div>
+        <div class="card-title"><div class="dot" style="background:var(--rust)"></div>新商材取り扱い時のセルフ判定チェックリスト</div>
+        <div class="notice" style="margin-bottom:12px"><span class="notice-icon">⚠️</span><span>以下の項目を<strong>1つでも満たす場合は稟議書の提出が必要</strong>です。すべて該当しない場合のみ事業部責任者決裁で取り扱い可能。</span></div>
         <div class="tbl-wrap">
           <table>
-            <thead><tr><th>Step</th><th>確認内容</th><th>判定</th><th>対応</th></tr></thead>
+            <thead><tr><th style="width:40px">チェック</th><th>確認内容</th><th>詳細・該当例</th></tr></thead>
             <tbody>
-              <tr><td class="td-dept">Step 1</td><td>SHCが料金回収の役務を負うか？<br><small>（月額請求・回収代行・卸として介在する取引）</small></td><td><span class="lv lv4">Yes</span></td><td>取引規模に応じてリスクモンスター必須<br>大規模の場合はラストワンマイル報告</td></tr>
-              <tr><td class="td-dept">Step 2</td><td>法令リスクへの抵触可能性があるか？<br><small>保険業法・特商法・電気通信事業法・割賦販売法・景品表示法・個人情報保護法等</small></td><td><span class="lv lv4">Yes</span></td><td>ラストワンマイル<strong>法務チェック必須</strong><br>役員会決裁</td></tr>
-              <tr><td class="td-dept">Step 3</td><td>商材リスク総合判定</td><td><span class="lv lv6">低リスク</span></td><td>経営管理部・社長決裁・LARK BASE記録</td></tr>
-              <tr><td></td><td></td><td><span class="lv lv4">中リスク</span></td><td>経営管理部・社長決裁＋ラストワンマイル報告</td></tr>
-              <tr><td></td><td></td><td><span class="lv lv2">高リスク</span></td><td>ラストワンマイル法務チェック・役員会決裁</td></tr>
+              <tr>
+                <td style="text-align:center;font-size:16px">☐</td>
+                <td><strong>SHC料金回収役務</strong><br><small>SHCが料金回収の役務を負う取引か</small></td>
+                <td>
+                  <div style="display:flex;flex-direction:column;gap:4px;font-size:11px">
+                    <span><span class="eg-rule-label" style="font-size:9px">継続的請求</span> 月額・定期請求の回収代行・卸として継続的に介在する取引</span>
+                    <span><span class="eg-rule-label" style="font-size:9px">単発請求</span> 都度請求・一括回収として介在する取引</span>
+                    <span><span class="eg-rule-label eg-label-warn" style="font-size:9px">口座引落・クレジット</span> 口座引落またはクレジット決済が発生する取引（<strong>必ず申請要</strong>）</span>
+                  </div>
+                </td>
+              </tr>
+              <tr>
+                <td style="text-align:center;font-size:16px">☐</td>
+                <td><strong>法令リスクへの抵触可能性</strong></td>
+                <td><span style="font-size:11px">保険業法・特商法・電気通信事業法・割賦販売法・景品表示法・個人情報保護法等<br>→ LOM法務チェック・役員会決裁が必要</span></td>
+              </tr>
             </tbody>
           </table>
         </div>
@@ -1382,6 +1590,26 @@ tr:hover td{background:var(--bg)}
 <button class="back-to-top" id="backToTop" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑</button>
 
 <script>
+// ===== HAMBURGER SIDEBAR =====
+function toggleSidebar() {
+  var sidebar = document.querySelector('.sidebar');
+  var overlay = document.getElementById('sidebarOverlay');
+  var isOpen = sidebar.classList.toggle('open');
+  overlay.classList.toggle('open', isOpen);
+}
+
+// サイドバーのnav-itemクリック時に閉じる（モバイル時のみ）
+document.addEventListener('DOMContentLoaded', function() {
+  document.querySelectorAll('.nav-item, .nav-sub').forEach(function(el) {
+    el.addEventListener('click', function() {
+      if (window.innerWidth <= 900) {
+        document.querySelector('.sidebar').classList.remove('open');
+        document.getElementById('sidebarOverlay').classList.remove('open');
+      }
+    });
+  });
+});
+
 // ===== TAB SWITCHING =====
 function switchTab(id, navEl) {
   document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
@@ -1414,7 +1642,7 @@ var orgDetails = {
   ams: {title:'AMS事業部', body:'【部長】外﨑 幹也（取締役兼務）\n\n【業務範囲】不動産アライアンス営業・MISP・防犯カメラ・住宅設備保証\n\n【指示経路】代表取締役 → 部長（外﨑）→ 各課長・主任 → 一般\n\n【課構成】工事課（梅川課長）・管理課（間下主任）'},
   'ams-koji': {title:'AMS事業部　工事課', body:'【課長】梅川 貴久\n\n【業務範囲】防犯カメラ・ネット設備の施工・LED切替工事・換気扇等少額工事\n\n【指示経路】部長（外﨑）→ 梅川課長 → 一般\n\n【重要】他部署からの直接依頼は受け付けない。必ずAMS事業部管理者を経由すること。'},
   'ams-kanri': {title:'AMS事業部　管理課', body:'【主任】間下\n\n【業務範囲】営業管理・進捗管理・社内連絡調整・書類管理\n\n【指示経路】部長（外﨑）→ 間下主任 → 一般'},
-  cc: {title:'コールセンター事業部', body:'【部長】池田 祐介　【次長】笠原 康平\n\n【業務範囲】AMSリストを活用した生活サービス案内・インターネット・電気・ガス・ウォーターサーバー等の取次（全て電話対応）\n\n【指示経路】代表取締役 → 池田部長 → 笠原次長 → 一般\n\n旧AMS事業部内CSチームを独立事業部として再編。'},
+  cc: {title:'コンタクトセンター事業部', body:'【部長】池田 祐介　【次長】笠原 康平\n\n【業務範囲】AMSリストを活用した生活サービス案内・インターネット・電気・ガス・ウォーターサーバー等の取次（全て電話対応）\n\n【指示経路】代表取締役 → 池田部長 → 笠原次長 → 一般\n\n旧AMS事業部内CSチームを独立事業部として再編。'},
   partner: {title:'パートナー事業部', body:'【部長】横井 駿　【主任】市 奈緒美\n\n【業務範囲】インターネット回線販売代理店の開拓・オーダー集約・代理店管理業務\n\n【指示経路】代表取締役 → 横井部長 → 市主任 → 一般'},
   houjin: {title:'法人営業部（旧：店舗ソリューション事業部）', body:'【部長】永野 恭平\n\n【業務範囲】店舗向け商材の直販・アライアンス・DXツール（LARK等）販売・コンサル・パートナー販路の開拓\n\n【指示経路】代表取締役 → 永野部長 → 一般'},
   ops: {title:'業務管理部', body:'【部長】黒川 健一郎\n\n【業務範囲】各キャリアへの投入業務・売上・支払手数料の計算・検収・月額請求管理・未収対応\n\n【指示経路】代表取締役 → 黒川部長 → 一般\n\n【重要】他部署管理者から業務管理部一般社員への直接指示は禁止。依頼は必ず業務管理部管理者を通じて行うこと。'},
@@ -1431,13 +1659,107 @@ function showDetail(k) {
 
 // ===== SHOKIKI =====
 var shokikiData = [
-  {id:'sk-ams', dept:'AMS事業部', color:'var(--purple)', customer:'不動産会社 / 賃貸管理会社 / 不動産オーナー', tasks:'集合住宅向け商材の提案営業、インターネット無料設備・防犯カメラ等の販売、入居者リスト連携提案', resp:'受注から契約締結までの責任、顧客との窓口管理、月額請求発生案件の顧客情報正確性の担保、入居者・不動産会社からのクレーム一次対応と上位者へのエスカレーション、工事トラブル発生時の顧客対応窓口', rule:'工事課への施工依頼は部署内管理者を通じて行う<br>業務管理部への投入依頼は所定フォームで行う'},
-  {id:'sk-cc', dept:'コールセンター事業部', color:'var(--green)', customer:'入居者（個人）', tasks:'AMSリストを活用した生活サービス案内、インターネット・電気・ガス・ウォーターサーバー等の取次、全て電話対応', resp:'案内品質・コンプライアンス管理、取次内容の正確性、業務管理部への投入依頼の責任、電話対応中のクレーム一次対応と通話録音の適切な管理・保管、重大クレーム・脅迫等は即時管理者へ報告しエスカレーションする', rule:'業務管理部への依頼は管理者承認後に所定フォームで行う<br>AMSへの入居者リスト追加依頼はAMS管理者へ'},
-  {id:'sk-partner', dept:'パートナー事業部', color:'var(--blue)', customer:'代理店 / パートナー企業', tasks:'インターネット回線販売代理店の開拓、オーダー集約・各種手続き、代理店管理業務', resp:'代理店との契約・関係管理、オーダー内容の正確性確認、業務管理部への投入依頼の責任、代理店経由のトラブル・クレーム発生時の一次対応と部長へのエスカレーション', rule:'業務管理部への依頼は管理者承認後に所定フォームで行う'},
-  {id:'sk-houjin', dept:'法人営業部', color:'var(--olive)', customer:'一般企業 / 法人・店舗', tasks:'店舗向け商材の直販・アライアンス、DXツール（LARK等）販売・コンサル、パートナー販路の開拓', resp:'法人顧客との契約・関係管理、見積・提案内容の正確性、アライアンス先との連携管理、法人顧客からのクレーム一次対応と部長へのエスカレーション、契約トラブル発生時は自己判断での解決を行わず必ず部長承認のうえ対応する', rule:'業務管理部への依頼は管理者承認後に所定フォームで行う'},
-  {id:'sk-ops', dept:'業務管理部', color:'var(--amber)', customer:'社内全部署 / キャリア・上位店', tasks:'各キャリアへの投入業務、不備発生時の各部署との連携、売上・支払手数料の計算・検収、月額請求管理（防犯カメラ等）、未収対応', resp:'投入業務の正確性・期日管理、手数料計算の正確性、未収案件の管理・報告、業務管理部一般社員への指示は業務管理部管理者のみが行う', rule:'<strong>【重要】他部署管理者から業務管理部一般社員への直接指示は禁止</strong><br>依頼は必ず業務管理部管理者を通じて行うこと'},
-  {id:'sk-ga', dept:'経営管理部', color:'var(--rust)', customer:'社内全部署 / 親会社・監査', tasks:'経理・会計業務、労務管理、IT統制・内部統制整備・運用、JSOX対応', resp:'財務情報の正確性、法令・規程遵守の管理、内部統制ルールの策定・運用監視、クレーム・トラブルが訴訟に発展した場合の法務対応窓口・外部弁護士との連携、社内のクレーム対応記録・証跡の保管管理。<strong>【情報管理】</strong>業務上知り得た経済条件・取引条件・顧客情報等を社外・競合他社へ口外することは厳禁。コンプライアンス規程に基づき厳正対応。', rule:'IT・システム関連の変更は経営管理部管理者の承認が必要<br>経費精算・支払は所定フォームで申請<br><strong>社外への情報漏洩は職種・役職を問わず厳禁</strong>'},
-  {id:'sk-ams-koji', dept:'工事課（AMS事業部内）', color:'#7B73D4', customer:'社内（AMS事業部）からの依頼のみ', tasks:'防犯カメラ・ネット設備の施工、LED切替工事、換気扇等少額工事、工事スケジュール管理、受注実績・着工実績の管理（当月・翌月着地）、AMS事業部部長への定期報告', resp:'AMS事業部管理者からの指示に基づく施工実行、施工完了報告・品質管理、工事に関する安全管理、施工クレーム・事故発生時はAMS事業部管理者へ即時報告し、対応内容・経緯を記録・保管する', rule:'<strong>他部署からの直接依頼は受け付けない</strong><br>必ずAMS事業部管理者を経由すること'},
+  {
+    id:'sk-ga', dept:'経営管理部', color:'var(--rust)',
+    manager:'伊藤 博之（部長）',
+    customer:'社内全部署 / 親会社・監査',
+    tasks:{
+      '経理・財務':['経理・会計業務、支払・精算管理、月次集計'],
+      '労務・HR':['労務管理、勤怠管理、入退社手続き'],
+      '内部統制・JSOX':['IT統制、内部統制整備・運用、監査対応、規程管理'],
+    },
+    resp:'財務情報の正確性、法令・規程遵守の管理、内部統制ルールの策定・運用監視、クレーム・トラブルが訴訟に発展した場合の法務対応窓口・外部弁護士との連携、社内のクレーム対応記録・証跡の保管管理。<strong>【情報管理】</strong>業務上知り得た経済条件・取引条件・顧客情報等を社外・競合他社へ口外することは厳禁。',
+    report:'月次KPI報告は管理者が内容を確認のうえ社長へ報告。予実管理は毎週金曜日に更新有無を確認し管理者にて更新作業を実施、月曜定例にて報告。',
+    rule:'IT・システム関連の変更は経営管理部管理者の承認が必要<br>経費精算・支払は所定フォームで申請',
+    kinshi:'経営管理部の承認なしにIT・システム変更を行うことは禁止<br>財務・労務情報の無断社外開示は禁止',
+  },
+  {
+    id:'sk-ams', dept:'AMS事業部', color:'var(--purple)',
+    manager:'外﨑 幹也（部長・取締役兼務）',
+    customer:'不動産会社 / 賃貸管理会社 / 不動産オーナー',
+    tasks:{
+      '営業・獲得':['不動産会社・賃貸管理会社への提案営業、インターネット無料設備・防犯カメラ等の販売、入居者リスト連携提案'],
+      '顧客・案件管理':['受注から契約締結までの管理、顧客との窓口管理、クレーム一次対応'],
+      '工事・施工管理':['工事課への施工依頼調整、完工確認・検収、工事トラブル対応窓口'],
+      '請求・手数料・未収':['請求業務、提携先への手数料検収、承認作業（承認は事業部責任者）、未収時の督促対応'],
+    },
+    resp:'受注から契約締結までの責任、顧客との窓口管理、月額請求発生案件の顧客情報正確性の担保、入居者・不動産会社からのクレーム一次対応と上位者へのエスカレーション、工事トラブル発生時の顧客対応窓口',
+    report:'月次KPI報告は管理者が内容を確認のうえ社長へ報告。予実管理は毎週金曜日に更新有無を確認し管理者にて更新作業を実施、月曜定例にて報告。',
+    rule:'工事課への施工依頼は部署内管理者を通じて行う<br>業務管理部への投入依頼は所定フォームで行う',
+    kinshi:'工事課への他部署からの直接依頼は禁止（必ずAMS管理者経由）<br>口頭のみでの契約・条件合意は禁止',
+  },
+  {
+    id:'sk-ams-koji', dept:'工事課（AMS事業部内）', color:'#7B73D4',
+    manager:'梅川 貴久（課長）',
+    customer:'社内（AMS事業部）からの依頼のみ',
+    tasks:{
+      '施工・工事':['防犯カメラ・ネット設備の施工、LED切替工事、換気扇等少額工事'],
+      'スケジュール・進捗管理':['工事スケジュール管理、受注実績・着工実績の管理（当月・翌月着地）'],
+      '報告・品質管理':['AMS事業部部長への定期報告、施工完了報告、安全管理'],
+    },
+    resp:'AMS事業部管理者からの指示に基づく施工実行、施工完了報告・品質管理、工事に関する安全管理、施工クレーム・事故発生時はAMS事業部管理者へ即時報告し、対応内容・経緯を記録・保管する',
+    report:'月次KPI報告は管理者が内容を確認のうえ報告。予実管理は毎週金曜日に更新有無を確認し管理者にて更新作業を実施、月曜定例にて報告。',
+    rule:'他部署からの直接依頼は受け付けない<br>必ずAMS事業部管理者を経由すること',
+    kinshi:'他部署管理者からの直接指示・依頼は受け付けない（必ずAMS事業部管理者経由）<br>施工完了の口頭報告のみは禁止（完工報告書の提出必須）',
+  },
+  {
+    id:'sk-cc', dept:'コンタクトセンター事業部', color:'var(--green)',
+    manager:'池田 祐介（部長）／笠原 康平（次長）',
+    customer:'入居者（個人）',
+    tasks:{
+      '電話対応・取次':['AMS事業部にて取得した入居者リストを活用した生活サービス案内、インターネット・電気・ガス・ウォーターサーバー等の取次'],
+      '品質・コンプライアンス管理':['案内品質管理、通話録音の適切な管理・保管、コンプライアンス遵守'],
+      'クレーム・エスカレーション':['電話対応中のクレーム一次対応、重大クレーム・脅迫等の即時管理者報告'],
+      '請求・手数料':['提携先への手数料支払いの検収、承認作業（承認は事業部責任者）'],
+    },
+    resp:'案内品質・コンプライアンス管理、取次内容の正確性、業務管理部への投入依頼の責任、電話対応中のクレーム一次対応と通話録音の適切な管理・保管、重大クレーム・脅迫等は即時管理者へ報告しエスカレーションする',
+    report:'月次KPI報告は管理者が内容を確認のうえ社長へ報告。予実管理は毎週金曜日に更新有無を確認し管理者にて更新作業を実施、月曜定例にて報告。',
+    rule:'業務管理部への依頼は管理者承認後に所定フォームで行う<br>AMSへの入居者リスト追加依頼はAMS管理者へ',
+    kinshi:'管理者未確認のまま業務管理部への投入依頼を行うことは禁止<br>通話録音の無断削除・未保管は禁止',
+  },
+  {
+    id:'sk-partner', dept:'パートナー事業部', color:'var(--blue)',
+    manager:'横井 駿（部長）／市 奈緒美（主任）',
+    customer:'代理店 / パートナー企業',
+    tasks:{
+      '代理店開拓・管理':['インターネット回線販売代理店の開拓、代理店管理業務、契約・関係管理'],
+      'オーダー・事務手続き':['オーダー集約・各種手続き、業務管理部への投入依頼'],
+      'トラブル・クレーム対応':['代理店経由のトラブル・クレーム一次対応、部長へのエスカレーション'],
+    },
+    resp:'代理店との契約・関係管理、オーダー内容の正確性確認、業務管理部への投入依頼の責任、代理店経由のトラブル・クレーム発生時の一次対応と部長へのエスカレーション',
+    report:'月次KPI報告は管理者が内容を確認のうえ社長へ報告。予実管理は毎週金曜日に更新有無を確認し管理者にて更新作業を実施、月曜定例にて報告。',
+    rule:'業務管理部への依頼は管理者承認後に所定フォームで行う',
+    kinshi:'管理者未確認のまま業務管理部への投入依頼を行うことは禁止<br>代理店との口頭のみでの条件合意は禁止',
+  },
+  {
+    id:'sk-houjin', dept:'法人営業部', color:'var(--olive)',
+    manager:'永野 恭平（部長）',
+    customer:'一般企業 / 法人・店舗',
+    tasks:{
+      '営業・開拓':['店舗向け商材の直販・アライアンス、パートナー販路の開拓'],
+      '提案・コンサル':['DXツール（LARK等）販売・コンサル、見積・提案内容の管理'],
+      '顧客・アライアンス管理':['法人顧客との契約・関係管理、アライアンス先との連携管理、クレーム対応'],
+      '請求・手数料・未収':['請求業務、提携先への手数料検収、承認作業（承認は事業部責任者）、未収時の督促対応'],
+    },
+    resp:'法人顧客との契約・関係管理、見積・提案内容の正確性、アライアンス先との連携管理、法人顧客からのクレーム一次対応と部長へのエスカレーション、契約トラブル発生時は自己判断での解決を行わず必ず部長承認のうえ対応する',
+    report:'月次KPI報告は管理者が内容を確認のうえ社長へ報告。予実管理は毎週金曜日に更新有無を確認し管理者にて更新作業を実施、月曜定例にて報告。',
+    rule:'業務管理部への依頼は管理者承認後に所定フォームで行う',
+    kinshi:'契約・条件確定を管理者承認なしに行うことは禁止<br>口頭のみでの条件合意は禁止',
+  },
+  {
+    id:'sk-ops', dept:'業務管理部', color:'var(--amber)',
+    manager:'黒川 健一郎（部長）',
+    customer:'社内全部署 / キャリア・上位店',
+    tasks:{
+      '投入・検収':['各キャリアへの投入業務、不備発生時の各部署との連携、各通信キャリアの代理店手数料の検収作業、各事業部への共有（検収責任は業務管理部）'],
+      '請求・回収':['月額請求管理（防犯カメラ等）、売上・支払手数料の計算、提携先への支払い通知書の作成（確認・承認は各事業部責任者）'],
+      '未収管理・報告':['未収対応、未収一覧の月次社長報告、獲得部署管理者への共有'],
+    },
+    resp:'投入業務の正確性・期日管理、手数料計算の正確性、未収案件の管理・報告、業務管理部一般社員への指示は業務管理部管理者のみが行う',
+    report:'月次KPI報告は管理者が内容を確認のうえ社長へ報告。予実管理は毎週金曜日に更新有無を確認し管理者にて更新作業を実施、月曜定例にて報告。',
+    rule:'<strong>【重要】他部署管理者から業務管理部一般社員への直接指示は禁止</strong><br>依頼は必ず業務管理部管理者を通じて行うこと',
+    kinshi:'他部署管理者から業務管理部一般社員への直接指示は受け付けない<br>管理者未確認のまま売上・手数料計算書を社長へ提出することは禁止',
+  },
 ];
 
 var sl = document.getElementById('shokiki-list');
@@ -1449,13 +1771,24 @@ shokikiData.forEach(d => {
   btn.onclick = () => scrollToAnchor(d.id);
   san.appendChild(btn);
 
+  // 担当業務カテゴリ別HTML生成
+  var tasksHtml = Object.entries(d.tasks).map(([cat, items]) =>
+    `<div style="margin-bottom:8px">
+      <div style="font-size:10px;font-weight:700;color:${d.color};background:var(--bg);border-radius:3px;padding:2px 8px;display:inline-block;margin-bottom:4px">${cat}</div>
+      <div style="font-size:11px;color:var(--text2);line-height:1.7;padding-left:4px">${items.join('、')}</div>
+    </div>`
+  ).join('');
+
   sl.innerHTML += `<div class="card" id="${d.id}" style="border-left:4px solid ${d.color}">
     <div class="card-title"><div class="dot" style="background:${d.color}"></div>${d.dept}</div>
     <table style="width:100%;font-size:12px;border-collapse:collapse">
-      <tr><td style="width:130px;color:var(--text3);padding:4px 8px 4px 0;vertical-align:top;font-weight:500;white-space:nowrap">主要顧客・接点</td><td style="padding:4px 0;color:var(--text2)">${d.customer}</td></tr>
-      <tr><td style="color:var(--text3);padding:4px 8px 4px 0;vertical-align:top;font-weight:500;white-space:nowrap">主な担当業務</td><td style="padding:4px 0;color:var(--text2)">${d.tasks}</td></tr>
+      <tr><td style="width:130px;color:var(--text3);padding:4px 8px 4px 0;vertical-align:top;font-weight:500;white-space:nowrap">事業部責任者</td><td style="padding:4px 0;color:var(--text);font-weight:700">${d.manager}</td></tr>
+      <tr><td style="color:var(--text3);padding:4px 8px 4px 0;vertical-align:top;font-weight:500;white-space:nowrap">主要顧客・接点</td><td style="padding:4px 0;color:var(--text2)">${d.customer}</td></tr>
+      <tr><td style="color:var(--text3);padding:4px 8px 4px 0;vertical-align:top;font-weight:500;white-space:nowrap">主な担当業務</td><td style="padding:4px 0">${tasksHtml}</td></tr>
       <tr><td style="color:var(--text3);padding:4px 8px 4px 0;vertical-align:top;font-weight:500;white-space:nowrap">責任範囲</td><td style="padding:4px 0;color:var(--text2)">${d.resp}</td></tr>
+      <tr><td style="color:var(--text3);padding:4px 8px 4px 0;vertical-align:top;font-weight:500;white-space:nowrap">報告義務</td><td style="padding:4px 0;color:var(--text2)">${d.report}</td></tr>
       <tr><td style="color:var(--text3);padding:4px 8px 4px 0;vertical-align:top;font-weight:500;white-space:nowrap">他部署への指示ルール</td><td style="padding:4px 0;color:var(--text2)">${d.rule}</td></tr>
+      <tr><td style="color:var(--text3);padding:4px 8px 4px 0;vertical-align:top;font-weight:500;white-space:nowrap">⚠️ 禁止事項</td><td style="padding:4px 0;color:var(--rust);font-weight:500">${d.kinshi}</td></tr>
     </table></div>`;
 });
 
@@ -1816,9 +2149,22 @@ var matrixData = [
     {name:'システム・IT変更の承認',vals:['◎','◎','○','―','―','―','―']},
   ]},
   {cat:'経営管理・経理', id:'mx-soumu', items:[
-    {name:'支払承認（100万円以上）',vals:['◎','○','△','―','―','―','―']},
-    {name:'支払承認（100万円未満）',vals:['◎','◎','○','○','―','―','―']},
+    {name:'支払承認（50万円以上）',vals:['◎','○','△','―','―','―','―']},
+    {name:'支払承認（10万円以上50万円未満）',vals:['◎','◎','○','―','―','―','―']},
+    {name:'支払承認（10万円未満）',vals:['◎','◎','○','○','―','―','―']},
+    {name:'緊急支払・締め日外支払の承認',vals:['◎','○','―','―','―','―','―']},
+    {name:'振込先口座の新規登録・変更承認',vals:['◎','○','―','―','―','―','―']},
+    {name:'請求書・証憑の受領確認',vals:['―','◎','○','◎','○','―','△']},
     {name:'帳票・請求書の発行承認',vals:['―','◎','○','◎','○','―','△']},
+    {name:'支払消込・残高確認の実施',vals:['―','◎','○','◎','○','△','―']},
+  ]},
+  {cat:'債務支払い 内部統制', id:'mx-fusai', items:[
+    {name:'支払依頼の起案（稟議書・申請書作成）',vals:['―','○','△','◎','○','―','―']},
+    {name:'請求書3点確認（請求書・発注書・納品書）',vals:['―','◎','○','◎','○','△','―']},
+    {name:'二重払いチェック・消込確認',vals:['―','◎','○','◎','○','―','―']},
+    {name:'振込データ作成（全銀フォーマット）',vals:['―','◎','○','◎','○','―','―']},
+    {name:'振込データの送信・実行',vals:['◎','◎','○','―','―','―','―']},
+    {name:'支払完了報告・証跡保管',vals:['―','◎','○','◎','○','―','―']},
   ]},
   {cat:'勤怠・行動管理', id:'mx-kintai', items:[
     {name:'有給休暇の承認',vals:['―','◎','○','◎','○','―','△']},
@@ -1889,8 +2235,8 @@ var persons = [
   {name:'外﨑 幹也', role:'AMS事業部 部長（取締役）', tab:'org', anchor:null},
   {name:'梅川 貴久', role:'AMS事業部 工事課長', tab:'org', anchor:null},
   {name:'間下', role:'AMS事業部 管理課 主任', tab:'org', anchor:null},
-  {name:'池田 祐介', role:'コールセンター事業部 部長', tab:'org', anchor:null},
-  {name:'笠原 康平', role:'コールセンター事業部 次長', tab:'org', anchor:null},
+  {name:'池田 祐介', role:'コンタクトセンター事業部 部長', tab:'org', anchor:null},
+  {name:'笠原 康平', role:'コンタクトセンター事業部 次長', tab:'org', anchor:null},
   {name:'横井 駿', role:'パートナー事業部 部長', tab:'org', anchor:null},
   {name:'市 奈緒美', role:'パートナー事業部 主任', tab:'org', anchor:null},
   {name:'永野 恭平', role:'法人営業部 部長', tab:'org', anchor:null},
@@ -2028,9 +2374,9 @@ var shinseiData = {
       note:'工事依頼はAMS事業部管理者経由のみ。他部署からの直接依頼は受け付けない。'
     },
     {
-      icon:'📞', name:'コールセンター業務マニュアル',
+      icon:'📞', name:'コンタクトセンター業務マニュアル',
       desc:'電話対応フロー・取次手順・品質基準・クレーム対応フロー・録音管理ルール。',
-      dept:'コールセンター事業部', deptStyle:'sh-badge-file',
+      dept:'コンタクトセンター事業部', deptStyle:'sh-badge-file',
       linkLabel:'Driveで閲覧する', url:'#TBD',
       note:'重大クレーム・脅迫等は即時管理者へ報告しエスカレーションすること。'
     },
